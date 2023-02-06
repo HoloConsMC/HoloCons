@@ -1,0 +1,874 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Derek Lee <derek.scott.lee13@gmail.com>
+Date: Sun, 5 Feb 2023 23:05:02 -0800
+Subject: [PATCH] Remove timings
+
+
+diff --git a/src/main/java/io/papermc/paper/chunk/system/scheduling/ChunkHolderManager.java b/src/main/java/io/papermc/paper/chunk/system/scheduling/ChunkHolderManager.java
+index e5d9c6f2cbe11c2ded6d8ad111fa6a8b2086dfba..1d61a9d7556d2bea018a2cba6aaf0bb12e7f08c0 100644
+--- a/src/main/java/io/papermc/paper/chunk/system/scheduling/ChunkHolderManager.java
++++ b/src/main/java/io/papermc/paper/chunk/system/scheduling/ChunkHolderManager.java
+@@ -915,9 +915,9 @@ public final class ChunkHolderManager {
+     }
+ 
+     public boolean processTicketUpdates() {
+-        co.aikar.timings.MinecraftTimings.distanceManagerTick.startTiming(); try { // Paper - add timings for distance manager
++        // Paper - add timings for distance manager // HoloCons - remove timings
+         return this.processTicketUpdates(true, true, null);
+-        } finally { co.aikar.timings.MinecraftTimings.distanceManagerTick.stopTiming(); } // Paper - add timings for distance manager
++        // Paper - add timings for distance manager // HoloCons - remove timings
+     }
+ 
+     private static final ThreadLocal<List<ChunkProgressionTask>> CURRENT_TICKET_UPDATE_SCHEDULING = new ThreadLocal<>();
+diff --git a/src/main/java/io/papermc/paper/chunk/system/scheduling/NewChunkHolder.java b/src/main/java/io/papermc/paper/chunk/system/scheduling/NewChunkHolder.java
+index 8013dd333e27aa5fd0beb431fa32491eec9f5246..0b7296f89b2c94cb3c3af81393c442ee720ea6b9 100644
+--- a/src/main/java/io/papermc/paper/chunk/system/scheduling/NewChunkHolder.java
++++ b/src/main/java/io/papermc/paper/chunk/system/scheduling/NewChunkHolder.java
+@@ -1750,7 +1750,7 @@ public final class NewChunkHolder {
+         boolean canSavePOI = !(chunk instanceof LevelChunk levelChunk && levelChunk.mustNotSave) && (poi != null && poi.isDirty());
+         boolean canSaveEntities = entities != null;
+ 
+-        try (co.aikar.timings.Timing ignored = this.world.timings.chunkSave.startTiming()) { // Paper
++        { // Paper // HoloCons - remove timings
+             if (canSaveChunk) {
+                 canSaveChunk = this.saveChunk(chunk, unloading);
+             }
+diff --git a/src/main/java/net/minecraft/network/protocol/PacketUtils.java b/src/main/java/net/minecraft/network/protocol/PacketUtils.java
+index 27d4aa45e585842c04491839826d405d6f447f0e..02756f85cc1e1a6e66c2adfc6bb38340c30eb7b2 100644
+--- a/src/main/java/net/minecraft/network/protocol/PacketUtils.java
++++ b/src/main/java/net/minecraft/network/protocol/PacketUtils.java
+@@ -46,8 +46,8 @@ public class PacketUtils {
+                 try { // Paper - detailed watchdog information
+                 if (MinecraftServer.getServer().hasStopped() || (listener instanceof ServerGamePacketListenerImpl && ((ServerGamePacketListenerImpl) listener).processedDisconnect)) return; // CraftBukkit, MC-142590
+                 if (listener.getConnection().isConnected()) {
+-                    co.aikar.timings.Timing timing = co.aikar.timings.MinecraftTimings.getPacketTiming(packet); // Paper - timings
+-                    try (co.aikar.timings.Timing ignored = timing.startTiming()) { // Paper - timings
++                    // Paper - timings // HoloCons - remove timings
++                    try { // Paper - timings // HoloCons - remove timings
+                         packet.handle(listener);
+                     } catch (Exception exception) {
+                         net.minecraft.network.Connection networkmanager = listener.getConnection();
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index 35a81dd726e3d065fce30de05b7ca6fada9fe484..a0f9e43b8f9fe4d45255d224fae3a2665be91354 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -1381,15 +1381,15 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+     public void onServerExit() {}
+ 
+     public void tickServer(BooleanSupplier shouldKeepTicking) {
+-        co.aikar.timings.TimingsManager.FULL_SERVER_TICK.startTiming(); // Paper
++        // Paper // HoloCons - remove timings
+         long i = Util.getNanos();
+ 
+         // Paper start - move oversleep into full server tick
+-        isOversleep = true;MinecraftTimings.serverOversleep.startTiming();
++        // HoloCons - remove timings
+         this.managedBlock(() -> {
+             return !this.canOversleep();
+         });
+-        isOversleep = false;MinecraftTimings.serverOversleep.stopTiming();
++        // HoloCons - remove timings
+         // Paper end
+         new com.destroystokyo.paper.event.server.ServerTickStartEvent(this.tickCount+1).callEvent(); // Paper
+ 
+@@ -1441,7 +1441,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+         // Paper end
+         io.papermc.paper.util.CachedLists.reset(); // Paper
+         // Paper start - move executeAll() into full server tick timing
+-        try (co.aikar.timings.Timing ignored = MinecraftTimings.processTasksTimer.startTiming()) {
++        { // HoloCons - remove timings
+             this.runAllTasks();
+         }
+         // Paper end
+@@ -1465,29 +1465,29 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+         this.frameTimer.logFrameDuration(i1 - i);
+         this.profiler.pop();
+         org.spigotmc.WatchdogThread.tick(); // Spigot
+-        co.aikar.timings.TimingsManager.FULL_SERVER_TICK.stopTiming(); // Paper
++        // Paper // HoloCons - remove timings
+     }
+ 
+     public void tickChildren(BooleanSupplier shouldKeepTicking) {
+-        MinecraftTimings.bukkitSchedulerTimer.startTiming(); // Spigot // Paper
++        // Spigot // Paper // HoloCons - remove timings
+         this.server.getScheduler().mainThreadHeartbeat(this.tickCount); // CraftBukkit
+-        MinecraftTimings.bukkitSchedulerTimer.stopTiming(); // Spigot // Paper
++        // Spigot // Paper // HoloCons - remove timings
+         this.profiler.push("commandFunctions");
+-        MinecraftTimings.commandFunctionsTimer.startTiming(); // Spigot // Paper
++        // Spigot // Paper // HoloCons - remove timings
+         this.getFunctions().tick();
+-        MinecraftTimings.commandFunctionsTimer.stopTiming(); // Spigot // Paper
++        // Spigot // Paper // HoloCons - remove timings
+         this.profiler.popPush("levels");
+         //Iterator iterator = this.getAllLevels().iterator(); // Paper - moved down
+ 
+         // CraftBukkit start
+         // Run tasks that are waiting on processing
+-        MinecraftTimings.processQueueTimer.startTiming(); // Spigot
++        // Spigot // HoloCons - remove timings
+         while (!this.processQueue.isEmpty()) {
+             this.processQueue.remove().run();
+         }
+-        MinecraftTimings.processQueueTimer.stopTiming(); // Spigot
++        // Spigot // HoloCons - remove timings
+ 
+-        MinecraftTimings.timeUpdateTimer.startTiming(); // Spigot // Paper
++        // Spigot // Paper // HoloCons - remove timings
+         // Send time updates to everyone, it will get the right time from the world the player is in.
+         // Paper start - optimize time updates
+         for (final ServerLevel world : this.getAllLevels()) {
+@@ -1507,7 +1507,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+             }
+         }
+         // Paper end
+-        MinecraftTimings.timeUpdateTimer.stopTiming(); // Spigot // Paper
++        // Spigot // Paper // HoloCons - remove timings
+ 
+         this.isIteratingOverLevels = true; // Paper
+         Iterator iterator = this.getAllLevels().iterator(); // Paper - move down
+@@ -1531,14 +1531,14 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+             this.profiler.push("tick");
+ 
+             try {
+-                worldserver.timings.doTick.startTiming(); // Spigot
++                // Spigot // HoloCons - remove timings
+                 worldserver.tick(shouldKeepTicking);
+                 // Paper start
+                 for (final io.papermc.paper.chunk.SingleThreadChunkRegionManager regionManager : worldserver.getChunkSource().chunkMap.regionManagers) {
+                     regionManager.recalculateRegions();
+                 }
+                 // Paper end
+-                worldserver.timings.doTick.stopTiming(); // Spigot
++                // Spigot // HoloCons - remove timings
+             } catch (Throwable throwable) {
+                 // Spigot Start
+                 CrashReport crashreport;
+@@ -1561,24 +1561,24 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+         this.isIteratingOverLevels = false; // Paper
+ 
+         this.profiler.popPush("connection");
+-        MinecraftTimings.connectionTimer.startTiming(); // Spigot
++        // Spigot // HoloCons - remove timings
+         this.getConnection().tick();
+-        MinecraftTimings.connectionTimer.stopTiming(); // Spigot
++        // Spigot // HoloCons - remove timings
+         this.profiler.popPush("players");
+-        MinecraftTimings.playerListTimer.startTiming(); // Spigot // Paper
++        // Spigot // Paper // HoloCons - remove timings
+         this.playerList.tick();
+-        MinecraftTimings.playerListTimer.stopTiming(); // Spigot // Paper
++        // Spigot // Paper // HoloCons - remove timings
+         if (SharedConstants.IS_RUNNING_IN_IDE) {
+             GameTestTicker.SINGLETON.tick();
+         }
+ 
+         this.profiler.popPush("server gui refresh");
+ 
+-        MinecraftTimings.tickablesTimer.startTiming(); // Spigot // Paper
++        // Spigot // Paper // HoloCons - remove timings
+         for (int i = 0; i < this.tickables.size(); ++i) {
+             ((Runnable) this.tickables.get(i)).run();
+         }
+-        MinecraftTimings.tickablesTimer.stopTiming(); // Spigot // Paper
++        // Spigot // Paper // HoloCons - remove timings
+ 
+         this.profiler.pop();
+     }
+@@ -2742,7 +2742,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+             return;
+         }
+ 
+-        co.aikar.timings.MinecraftTimings.midTickChunkTasks.startTiming();
++        // HoloCons - remove timings
+         try {
+             for (;;) {
+                 boolean moreTasks = this.tickMidTickTasks();
+@@ -2769,7 +2769,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+                 }
+             }
+         } finally {
+-            co.aikar.timings.MinecraftTimings.midTickChunkTasks.stopTiming();
++            // HoloCons - remove timings
+         }
+     }
+     // Paper end - execute chunk tasks mid tick
+diff --git a/src/main/java/net/minecraft/server/ServerFunctionManager.java b/src/main/java/net/minecraft/server/ServerFunctionManager.java
+index 6483a1d461904a0584b6808b2f86ac7329bba963..fe8d62e90acc5d6ac58b724822694d8383c4dea0 100644
+--- a/src/main/java/net/minecraft/server/ServerFunctionManager.java
++++ b/src/main/java/net/minecraft/server/ServerFunctionManager.java
+@@ -88,7 +88,7 @@ public class ServerFunctionManager {
+         } else {
+             int i;
+ 
+-            try (co.aikar.timings.Timing timing = function.getTiming().startTiming()) { // Paper
++            try { // Paper // HoloCons - remove timings
+                 this.context = new ServerFunctionManager.ExecutionContext(tracer);
+                 i = this.context.runTopCommand(function, source);
+             } finally {
+diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+index 51b3db0b6c2cede95b584268e035c0fb36d38094..8842bf1375ec17e2eecb52711cef728015d2f646 100644
+--- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
++++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+@@ -478,7 +478,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+     }
+ 
+     public void handleConsoleInputs() {
+-        MinecraftTimings.serverCommandTimer.startTiming(); // Spigot
++        // Spigot // HoloCons - remove timings
+         // Paper start - use proper queue
+         ConsoleInput servercommand;
+         while ((servercommand = this.serverCommandQueue.poll()) != null) {
+@@ -495,7 +495,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+             // CraftBukkit end
+         }
+ 
+-        MinecraftTimings.serverCommandTimer.stopTiming(); // Spigot
++        // Spigot // HoloCons - remove timings
+     }
+ 
+     @Override
+diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
+index 2212f9f48636357265d8e44aba415ea4f09f1fe7..f78829e825a938d0981287dba73d5ee2bb2a7e22 100644
+--- a/src/main/java/net/minecraft/server/level/ChunkMap.java
++++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
+@@ -620,13 +620,13 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+     protected void tick(BooleanSupplier shouldKeepTicking) {
+         ProfilerFiller gameprofilerfiller = this.level.getProfiler();
+ 
+-        try (Timing ignored = this.level.timings.poiUnload.startTiming()) { // Paper
++        { // Paper // HoloCons - remove timings
+         gameprofilerfiller.push("poi");
+         this.poiManager.tick(shouldKeepTicking);
+         } // Paper
+         gameprofilerfiller.popPush("chunk_unload");
+         if (!this.level.noSave()) {
+-            try (Timing ignored = this.level.timings.chunkUnload.startTiming()) { // Paper
++            { // Paper // HoloCons - remove timings
+             this.processUnloads(shouldKeepTicking);
+             } // Paper
+         }
+@@ -1250,24 +1250,24 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+ 
+     // Paper start - optimised tracker
+     private final void processTrackQueue() {
+-        this.level.timings.tracker1.startTiming();
++        // HoloCons - remove timings
+         try {
+             for (TrackedEntity tracker : this.entityMap.values()) {
+                 // update tracker entry
+                 tracker.updatePlayers(tracker.entity.getPlayersInTrackRange());
+             }
+         } finally {
+-            this.level.timings.tracker1.stopTiming();
++            // HoloCons - remove timings
+         }
+ 
+ 
+-        this.level.timings.tracker2.startTiming();
++        // HoloCons - remove timings
+         try {
+             for (TrackedEntity tracker : this.entityMap.values()) {
+                 tracker.serverEntity.sendChanges();
+             }
+         } finally {
+-            this.level.timings.tracker2.stopTiming();
++            // HoloCons - remove timings
+         }
+     }
+     // Paper end - optimised tracker
+@@ -1282,7 +1282,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+         List<ServerPlayer> list = Lists.newArrayList();
+         List<ServerPlayer> list1 = this.level.players();
+         ObjectIterator objectiterator = this.entityMap.values().iterator();
+-        level.timings.tracker1.startTiming(); // Paper
++        // Paper // HoloCons - remove timings
+ 
+         ChunkMap.TrackedEntity playerchunkmap_entitytracker;
+ 
+@@ -1307,17 +1307,17 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+                 playerchunkmap_entitytracker.serverEntity.sendChanges();
+             }
+         }
+-        level.timings.tracker1.stopTiming(); // Paper
++        // Paper // HoloCons - remove timings
+ 
+         if (!list.isEmpty()) {
+             objectiterator = this.entityMap.values().iterator();
+ 
+-            level.timings.tracker2.startTiming(); // Paper
++            // Paper // HoloCons - remove timings
+             while (objectiterator.hasNext()) {
+                 playerchunkmap_entitytracker = (ChunkMap.TrackedEntity) objectiterator.next();
+                 playerchunkmap_entitytracker.updatePlayers(list);
+             }
+-            level.timings.tracker2.stopTiming(); // Paper
++            // Paper // HoloCons - remove timings
+         }
+ 
+     }
+diff --git a/src/main/java/net/minecraft/server/level/ServerChunkCache.java b/src/main/java/net/minecraft/server/level/ServerChunkCache.java
+index ca84eddbdb1e198b899750e5f6b3eafd25ce970f..bb94fd55ab392d4409c46878cf4ce0c235f099e4 100644
+--- a/src/main/java/net/minecraft/server/level/ServerChunkCache.java
++++ b/src/main/java/net/minecraft/server/level/ServerChunkCache.java
+@@ -447,10 +447,10 @@ public class ServerChunkCache extends ChunkSource {
+                 io.papermc.paper.chunk.system.scheduling.ChunkTaskScheduler.pushChunkWait(this.level, x1, z1); // Paper - rewrite chunk system
+                 // Paper end
+                 com.destroystokyo.paper.io.SyncLoadFinder.logSyncLoad(this.level, x1, z1); // Paper - sync load info
+-                this.level.timings.syncChunkLoad.startTiming(); // Paper
++                // Paper // HoloCons - remove timings
+             chunkproviderserver_b.managedBlock(completablefuture::isDone);
+                 io.papermc.paper.chunk.system.scheduling.ChunkTaskScheduler.popChunkWait(); // Paper - async chunk debug  // Paper - rewrite chunk system
+-                this.level.timings.syncChunkLoad.stopTiming(); // Paper
++                // Paper // HoloCons - remove timings
+             } // Paper
+             ichunkaccess = (ChunkAccess) ((Either) completablefuture.join()).map((ichunkaccess1) -> {
+                 return ichunkaccess1;
+@@ -598,7 +598,7 @@ public class ServerChunkCache extends ChunkSource {
+ 
+     public void save(boolean flush) {
+         this.runDistanceManagerUpdates();
+-        try (co.aikar.timings.Timing timed = level.timings.chunkSaveData.startTiming()) { // Paper - Timings
++        { // Paper - Timings // HoloCons - remove timings
+         this.chunkMap.saveAllChunks(flush);
+         } // Paper - Timings
+     }
+@@ -606,7 +606,7 @@ public class ServerChunkCache extends ChunkSource {
+     // Paper start - duplicate save, but call incremental
+     public void saveIncrementally() {
+         this.runDistanceManagerUpdates();
+-        try (co.aikar.timings.Timing timed = level.timings.chunkSaveData.startTiming()) { // Paper - Timings
++        { // Paper - Timings // HoloCons - remove timings
+             this.chunkMap.saveIncrementally();
+         } // Paper - Timings
+     }
+@@ -638,22 +638,22 @@ public class ServerChunkCache extends ChunkSource {
+     @Override
+     public void tick(BooleanSupplier shouldKeepTicking, boolean tickChunks) {
+         this.level.getProfiler().push("purge");
+-        this.level.timings.doChunkMap.startTiming(); // Spigot
++        // Spigot // HoloCons - remove timings
+         this.distanceManager.purgeStaleTickets();
+         this.runDistanceManagerUpdates();
+-        this.level.timings.doChunkMap.stopTiming(); // Spigot
++        // Spigot // HoloCons - remove timings
+         this.level.getProfiler().popPush("chunks");
+         if (tickChunks) {
+-            this.level.timings.chunks.startTiming(); // Paper - timings
++            // Paper - timings // HoloCons - remove timings
+             this.chunkMap.playerChunkManager.tick(); // Paper - this is mostly is to account for view distance changes
+             this.tickChunks();
+-            this.level.timings.chunks.stopTiming(); // Paper - timings
++            // Paper - timings // HoloCons - remove timings
+         }
+ 
+-        this.level.timings.doChunkUnload.startTiming(); // Spigot
++        // Spigot // HoloCons - remove timings
+         this.level.getProfiler().popPush("unload");
+         this.chunkMap.tick(shouldKeepTicking);
+-        this.level.timings.doChunkUnload.stopTiming(); // Spigot
++        // Spigot // HoloCons - remove timings
+         this.level.getProfiler().pop();
+         this.clearCache();
+     }
+@@ -707,7 +707,7 @@ public class ServerChunkCache extends ChunkSource {
+             boolean flag1 = level.ticksPerSpawnCategory.getLong(org.bukkit.entity.SpawnCategory.ANIMAL) != 0L && worlddata.getGameTime() % level.ticksPerSpawnCategory.getLong(org.bukkit.entity.SpawnCategory.ANIMAL) == 0L; // CraftBukkit
+ 
+             gameprofilerfiller.push("naturalSpawnCount");
+-            this.level.timings.countNaturalMobs.startTiming(); // Paper - timings
++            // Paper - timings // HoloCons - remove timings
+             int l = this.distanceManager.getNaturalSpawnChunkCount();
+             // Paper start - per player mob spawning
+             NaturalSpawner.SpawnState spawnercreature_d; // moved down
+@@ -721,12 +721,12 @@ public class ServerChunkCache extends ChunkSource {
+                 spawnercreature_d = NaturalSpawner.createState(l, this.level.getAllEntities(), this::getFullChunk, this.chunkMap.playerMobDistanceMap == null ? new LocalMobCapCalculator(this.chunkMap) : null, false);
+             }
+             // Paper end
+-            this.level.timings.countNaturalMobs.stopTiming(); // Paper - timings
++            // Paper - timings // HoloCons - remove timings
+ 
+             this.lastSpawnState = spawnercreature_d;
+             gameprofilerfiller.popPush("filteringLoadedChunks");
+             // Paper - moved down
+-            this.level.timings.chunkTicks.startTiming(); // Paper
++            // Paper // HoloCons - remove timings
+ 
+             // Paper - moved down
+ 
+@@ -780,17 +780,17 @@ public class ServerChunkCache extends ChunkSource {
+                 }
+             }
+             // Paper end - optimise chunk tick iteration
+-            this.level.timings.chunkTicks.stopTiming(); // Paper
++            // Paper // HoloCons - remove timings
+             gameprofilerfiller.popPush("customSpawners");
+             if (flag2) {
+-                try (co.aikar.timings.Timing ignored = this.level.timings.miscMobSpawning.startTiming()) { // Paper - timings
++                { // Paper - timings // HoloCons - remove timings
+                 this.level.tickCustomSpawners(this.spawnEnemies, this.spawnFriendlies);
+                 } // Paper - timings
+             }
+             gameprofilerfiller.pop();
+             // Paper start - use set of chunks requiring updates, rather than iterating every single one loaded
+             gameprofilerfiller.popPush("broadcast");
+-            this.level.timings.broadcastChunkUpdates.startTiming(); // Paper - timing
++            // Paper - timing // HoloCons - remove timings
+             if (!this.chunkMap.needsChangeBroadcasting.isEmpty()) {
+                 ReferenceOpenHashSet<ChunkHolder> copy = this.chunkMap.needsChangeBroadcasting.clone();
+                 this.chunkMap.needsChangeBroadcasting.clear();
+@@ -802,7 +802,7 @@ public class ServerChunkCache extends ChunkSource {
+                     }
+                 }
+             }
+-            this.level.timings.broadcastChunkUpdates.stopTiming(); // Paper - timing
++            // Paper - timing // HoloCons - remove timings
+             gameprofilerfiller.pop();
+             // Paper end - use set of chunks requiring updates, rather than iterating every single one loaded
+             // Paper start - controlled flush for entity tracker packets
+diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
+index 54c2b7fba83d6f06dba95b1bb5b487a02048d6e6..a726e66acab52cba2109729d970a9b188ad4426c 100644
+--- a/src/main/java/net/minecraft/server/level/ServerLevel.java
++++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
+@@ -666,7 +666,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+         this.updateSkyBrightness();
+         this.tickTime();
+         gameprofilerfiller.popPush("tickPending");
+-        timings.scheduledBlocks.startTiming(); // Paper
++        // Paper // HoloCons - remove timings
+         if (!this.isDebug()) {
+             j = this.getGameTime();
+             gameprofilerfiller.push("blockTicks");
+@@ -675,20 +675,20 @@ public class ServerLevel extends Level implements WorldGenLevel {
+             this.fluidTicks.tick(j, 65536, this::tickFluid);
+             gameprofilerfiller.pop();
+         }
+-        timings.scheduledBlocks.stopTiming(); // Paper
++        // Paper // HoloCons - remove timings
+ 
+         gameprofilerfiller.popPush("raid");
+-        this.timings.raids.startTiming(); // Paper - timings
++        // Paper - timings // HoloCons - remove timings
+         this.raids.tick();
+-        this.timings.raids.stopTiming(); // Paper - timings
++        // Paper - timings // HoloCons - remove timings
+         gameprofilerfiller.popPush("chunkSource");
+-        this.timings.chunkProviderTick.startTiming(); // Paper - timings
++        // Paper - timings // HoloCons - remove timings
+         this.getChunkSource().tick(shouldKeepTicking, true);
+-        this.timings.chunkProviderTick.stopTiming(); // Paper - timings
++        // Paper - timings // HoloCons - remove timings
+         gameprofilerfiller.popPush("blockEvents");
+-        timings.doSounds.startTiming(); // Spigot
++        // Spigot // HoloCons - remove timings
+         this.runBlockEvents();
+-        timings.doSounds.stopTiming(); // Spigot
++        // Spigot // HoloCons - remove timings
+         this.handlingTick = false;
+         gameprofilerfiller.pop();
+         boolean flag = true || !this.players.isEmpty() || !this.getForcedChunks().isEmpty(); // CraftBukkit - this prevents entity cleanup, other issues on servers with no players
+@@ -699,7 +699,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+ 
+         if (flag || this.emptyTime++ < 300) {
+             gameprofilerfiller.push("entities");
+-            timings.tickEntities.startTiming(); // Spigot
++            // Spigot // HoloCons - remove timings
+             if (this.dragonFight != null) {
+                 gameprofilerfiller.push("dragonFight");
+                 this.dragonFight.tick();
+@@ -707,7 +707,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+             }
+ 
+             org.spigotmc.ActivationRange.activateEntities(this); // Spigot
+-            timings.entityTick.startTiming(); // Spigot
++            // Spigot // HoloCons - remove timings
+             this.entityTickList.forEach((entity) -> {
+                 if (!entity.isRemoved()) {
+                     if (false && this.shouldDiscardEntity(entity)) { // CraftBukkit - We prevent spawning in general, so this butchering is not needed
+@@ -734,8 +734,8 @@ public class ServerLevel extends Level implements WorldGenLevel {
+                     }
+                 }
+             });
+-            timings.entityTick.stopTiming(); // Spigot
+-            timings.tickEntities.stopTiming(); // Spigot
++            // Spigot // HoloCons - remove timings
++            // Spigot // HoloCons - remove timings
+             gameprofilerfiller.pop();
+             this.tickBlockEntities();
+         }
+@@ -886,7 +886,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+ 
+         // Paper start - optimise random block ticking
+         gameprofilerfiller.popPush("randomTick");
+-        timings.chunkTicksBlocks.startTiming(); // Paper
++        // Paper // HoloCons - remove timings
+         if (randomTickSpeed > 0) {
+             LevelChunkSection[] sections = chunk.getSections();
+             int minSection = io.papermc.paper.util.WorldUtil.getMinSection(this);
+@@ -920,7 +920,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+             }
+         }
+         // Paper end - optimise random block ticking
+-        timings.chunkTicksBlocks.stopTiming(); // Paper
++        // Paper // HoloCons - remove timings
+         gameprofilerfiller.pop();
+     }
+ 
+@@ -1195,8 +1195,8 @@ public class ServerLevel extends Level implements WorldGenLevel {
+         // Spigot end
+         // Paper start- timings
+         final boolean isActive = org.spigotmc.ActivationRange.checkIfActive(entity);
+-        timer = isActive ? entity.getType().tickTimer.startTiming() : entity.getType().inactiveTickTimer.startTiming(); // Paper
+-        try {
++        // Paper // HoloCons - remove timings
++        // HoloCons - remove timings
+         // Paper end - timings
+         entity.setOldPosAndRot();
+         ProfilerFiller gameprofilerfiller = this.getProfiler();
+@@ -1212,7 +1212,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+         entity.postTick(); // CraftBukkit
+         } else { entity.inactiveTick(); } // Paper - EAR 2
+         this.getProfiler().pop();
+-        } finally { timer.stopTiming(); } // Paper - timings
++        // Paper - timings // HoloCons - remove timings
+         Iterator iterator = entity.getPassengers().iterator();
+ 
+         while (iterator.hasNext()) {
+@@ -1235,8 +1235,8 @@ public class ServerLevel extends Level implements WorldGenLevel {
+             if (passenger instanceof Player || this.entityTickList.contains(passenger)) {
+                 // Paper - EAR 2
+                 final boolean isActive = org.spigotmc.ActivationRange.checkIfActive(passenger);
+-                co.aikar.timings.Timing timer = isActive ? passenger.getType().passengerTickTimer.startTiming() : passenger.getType().passengerInactiveTickTimer.startTiming(); // Paper
+-                try {
++                // Paper // HoloCons - remove timings
++                // HoloCons - remove timings
+                 // Paper end
+                 passenger.setOldPosAndRot();
+                 ++passenger.tickCount;
+@@ -1266,7 +1266,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+                     this.tickPassenger(passenger, entity2);
+                 }
+ 
+-            } finally { timer.stopTiming(); }// Paper - EAR2 timings
++            // Paper - EAR2 timings // HoloCons - remove timings
+             }
+         } else {
+             passenger.stopRiding();
+@@ -1286,14 +1286,14 @@ public class ServerLevel extends Level implements WorldGenLevel {
+             org.bukkit.Bukkit.getPluginManager().callEvent(new org.bukkit.event.world.WorldSaveEvent(getWorld()));
+         }
+ 
+-        try (co.aikar.timings.Timing ignored = this.timings.worldSave.startTiming()) {
++        { // HoloCons - remove timings
+             if (doFull) {
+                 this.saveLevelData();
+             }
+ 
+-            this.timings.worldSaveChunks.startTiming(); // Paper
++            // Paper // HoloCons - remove timings
+             if (!this.noSave()) chunkproviderserver.saveIncrementally();
+-            this.timings.worldSaveChunks.stopTiming(); // Paper
++            // Paper // HoloCons - remove timings
+ 
+             // Copied from save()
+             // CraftBukkit start - moved from MinecraftServer.saveChunks
+@@ -1319,7 +1319,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+ 
+         if (!savingDisabled) {
+             org.bukkit.Bukkit.getPluginManager().callEvent(new org.bukkit.event.world.WorldSaveEvent(getWorld())); // CraftBukkit
+-            try (co.aikar.timings.Timing ignored = timings.worldSave.startTiming()) { // Paper
++            { // Paper // HoloCons - remove timings
+             if (progressListener != null) {
+                 progressListener.progressStartNoAbort(Component.translatable("menu.savingLevel"));
+             }
+@@ -1329,10 +1329,10 @@ public class ServerLevel extends Level implements WorldGenLevel {
+                 progressListener.progressStage(Component.translatable("menu.savingChunks"));
+             }
+ 
+-                timings.worldSaveChunks.startTiming(); // Paper
++            // Paper // HoloCons - remove timings
+             if (!close) chunkproviderserver.save(flush); // Paper - rewrite chunk system
+             if (close) chunkproviderserver.close(true); // Paper - rewrite chunk system
+-                timings.worldSaveChunks.stopTiming(); // Paper
++            // Paper // HoloCons - remove timings
+             }// Paper
+             // Paper - rewrite chunk system - entity saving moved into ChunkHolder
+ 
+diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+index 3472f7f9b98d6d9c9f6465872803ef17fa67486d..e590e3b642c1ee1d0997f81071f0a5925fa18f8e 100644
+--- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
++++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+@@ -2494,7 +2494,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+             }
+         }
+         // Paper End
+-        co.aikar.timings.MinecraftTimings.playerCommandTimer.startTiming(); // Paper
++        // Paper // HoloCons - remove timings
+         if ( org.spigotmc.SpigotConfig.logCommands ) // Spigot
+         this.LOGGER.info(this.player.getScoreboardName() + " issued server command: " + s);
+ 
+@@ -2504,7 +2504,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+         this.cserver.getPluginManager().callEvent(event);
+ 
+         if (event.isCancelled()) {
+-            co.aikar.timings.MinecraftTimings.playerCommandTimer.stopTiming(); // Paper
++            // Paper // HoloCons - remove timings
+             return;
+         }
+ 
+@@ -2517,7 +2517,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+             java.util.logging.Logger.getLogger(ServerGamePacketListenerImpl.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+             return;
+         } finally {
+-            co.aikar.timings.MinecraftTimings.playerCommandTimer.stopTiming(); // Paper
++            // Paper // HoloCons - remove timings
+         }
+     }
+     // CraftBukkit end
+diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
+index 4b754f6eae683248d7fe11d6d6cb168d5dd696a2..601125456d1b073b180ffcb371ccbf977236c94b 100644
+--- a/src/main/java/net/minecraft/server/players/PlayerList.java
++++ b/src/main/java/net/minecraft/server/players/PlayerList.java
+@@ -1185,7 +1185,7 @@ public abstract class PlayerList {
+ 
+     public void saveAll(int interval) {
+         io.papermc.paper.util.MCUtil.ensureMain("Save Players" , () -> { // Paper - Ensure main
+-        MinecraftTimings.savePlayers.startTiming(); // Paper
++        // Paper // HoloCons - remove timings
+         int numSaved = 0;
+         long now = MinecraftServer.currentTick;
+         for (int i = 0; i < this.players.size(); ++i) {
+@@ -1196,7 +1196,7 @@ public abstract class PlayerList {
+             }
+             // Paper end
+         }
+-        MinecraftTimings.savePlayers.stopTiming(); // Paper
++        // Paper // HoloCons - remove timings
+         return null; }); // Paper - ensure main
+     }
+ 
+diff --git a/src/main/java/net/minecraft/world/entity/ai/behavior/Behavior.java b/src/main/java/net/minecraft/world/entity/ai/behavior/Behavior.java
+index 57ef7fbba3028c28231abf7b7ae78aa019323536..789cc8ddd7b4c50afcf9fca99e3ca620127fbbef 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/behavior/Behavior.java
++++ b/src/main/java/net/minecraft/world/entity/ai/behavior/Behavior.java
+@@ -58,9 +58,9 @@ public abstract class Behavior<E extends LivingEntity> implements BehaviorContro
+             this.status = Behavior.Status.RUNNING;
+             int i = this.minDuration + world.getRandom().nextInt(this.maxDuration + 1 - this.minDuration);
+             this.endTimestamp = time + (long)i;
+-            this.timing.startTiming(); // Paper - behavior timings
++            // Paper - behavior timings // HoloCons - remove timings
+             this.start(world, entity, time);
+-            this.timing.stopTiming(); // Paper - behavior timings
++            // Paper - behavior timings // HoloCons - remove timings
+             return true;
+         } else {
+             return false;
+@@ -72,13 +72,13 @@ public abstract class Behavior<E extends LivingEntity> implements BehaviorContro
+ 
+     @Override
+     public final void tickOrStop(ServerLevel world, E entity, long time) {
+-        this.timing.startTiming(); // Paper - behavior timings
++        // Paper - behavior timings // HoloCons - remove timings
+         if (!this.timedOut(time) && this.canStillUse(world, entity, time)) {
+             this.tick(world, entity, time);
+         } else {
+             this.doStop(world, entity, time);
+         }
+-        this.timing.stopTiming(); // Paper - behavior timings
++        // Paper - behavior timings // HoloCons - remove timings
+ 
+     }
+ 
+diff --git a/src/main/java/net/minecraft/world/entity/ai/sensing/Sensor.java b/src/main/java/net/minecraft/world/entity/ai/sensing/Sensor.java
+index fcdb9bde8e1605e30dde3e580491522d4b62cdc0..c945893f1f0e6f11ec99b3b48d20004e6f4218e3 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/sensing/Sensor.java
++++ b/src/main/java/net/minecraft/world/entity/ai/sensing/Sensor.java
+@@ -46,10 +46,10 @@ public abstract class Sensor<E extends LivingEntity> {
+         if (--this.timeToTick <= 0L) {
+             // Paper start - configurable sensor tick rate and timings
+             this.timeToTick = java.util.Objects.requireNonNullElse(world.paperConfig().tickRates.sensor.get(entity.getType(), this.configKey), this.scanRate);
+-            this.timing.startTiming();
++            // HoloCons - remove timings
+             // Paper end
+             this.doTick(world, entity);
+-            this.timing.stopTiming(); // Paper - sensor timings
++            // Paper - sensor timings // HoloCons - remove timings
+         }
+ 
+     }
+diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
+index 3cbf801b2e5420c0e870f73788deb550e49ad54d..e6d127af078f5a37baaeae87114a1f5c681c9b08 100644
+--- a/src/main/java/net/minecraft/world/level/Level.java
++++ b/src/main/java/net/minecraft/world/level/Level.java
+@@ -865,15 +865,15 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+         ProfilerFiller gameprofilerfiller = this.getProfiler();
+ 
+         gameprofilerfiller.push("blockEntities");
+-        timings.tileEntityPending.startTiming(); // Spigot
++        // Spigot // HoloCons - remove timings
+         this.tickingBlockEntities = true;
+         if (!this.pendingBlockEntityTickers.isEmpty()) {
+             this.blockEntityTickers.addAll(this.pendingBlockEntityTickers);
+             this.pendingBlockEntityTickers.clear();
+         }
+-        timings.tileEntityPending.stopTiming(); // Spigot
++        // Spigot // HoloCons - remove timings
+ 
+-        timings.tileEntityTick.startTiming(); // Spigot
++        // Spigot // HoloCons - remove timings
+         // Spigot start
+         // Iterator iterator = this.blockEntityTickers.iterator();
+         int tilesThisCycle = 0;
+@@ -906,7 +906,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+         }
+         this.blockEntityTickers.removeAll(toRemove);
+ 
+-        timings.tileEntityTick.stopTiming(); // Spigot
++        // Spigot // HoloCons - remove timings
+         this.tickingBlockEntities = false;
+         co.aikar.timings.TimingHistory.tileEntityTicks += this.blockEntityTickers.size(); // Paper
+         gameprofilerfiller.pop();
+diff --git a/src/main/java/net/minecraft/world/level/NaturalSpawner.java b/src/main/java/net/minecraft/world/level/NaturalSpawner.java
+index 01b21f520ef1c834b9bafc3de85c1fa4fcf539d6..b01b19f3bbf30fa695e1e3871a19199a76454c62 100644
+--- a/src/main/java/net/minecraft/world/level/NaturalSpawner.java
++++ b/src/main/java/net/minecraft/world/level/NaturalSpawner.java
+@@ -133,7 +133,7 @@ public final class NaturalSpawner {
+ 
+     public static void spawnForChunk(ServerLevel world, LevelChunk chunk, NaturalSpawner.SpawnState info, boolean spawnAnimals, boolean spawnMonsters, boolean rareSpawn) {
+         world.getProfiler().push("spawner");
+-        world.timings.mobSpawn.startTiming(); // Spigot
++        // Spigot // HoloCons - remove timings
+         MobCategory[] aenumcreaturetype = NaturalSpawner.SPAWNING_CATEGORIES;
+         int i = aenumcreaturetype.length;
+ 
+@@ -188,7 +188,7 @@ public final class NaturalSpawner {
+             }
+         }
+ 
+-        world.timings.mobSpawn.stopTiming(); // Spigot
++        // Spigot // HoloCons - remove timings
+         world.getProfiler().pop();
+     }
+ 
+diff --git a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
+index 28e4b302284f955a73e75d0f4276d55fb51826f5..afe23d54bf7284fb1b171ce1a86e4247b30db8ae 100644
+--- a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
++++ b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
+@@ -917,7 +917,7 @@ public class LevelChunk extends ChunkAccess {
+             this.chunkHolder.getEntityChunk().callEntitiesLoadEvent(); // Paper - rewrite chunk system
+ 
+             if (this.needsDecoration) {
+-                try (co.aikar.timings.Timing ignored = this.level.timings.chunkLoadPopulate.startTiming()) { // Paper
++                { // Paper // HoloCons - remove timings
+                 this.needsDecoration = false;
+                 java.util.Random random = new java.util.Random();
+                 random.setSeed(this.level.getSeed());
+@@ -1297,7 +1297,7 @@ public class LevelChunk extends ChunkAccess {
+                         ProfilerFiller gameprofilerfiller = LevelChunk.this.level.getProfiler();
+ 
+                         gameprofilerfiller.push(this::getType);
+-                        this.blockEntity.tickTimer.startTiming(); // Spigot
++                        // Spigot // HoloCons - remove timings
+                         BlockState iblockdata = LevelChunk.this.getBlockState(blockposition);
+ 
+                         if (this.blockEntity.getType().isValid(iblockdata)) {
+@@ -1319,7 +1319,7 @@ public class LevelChunk extends ChunkAccess {
+                         // Paper end
+                         // Spigot start
+                     } finally {
+-                        this.blockEntity.tickTimer.stopTiming();
++                        // HoloCons - remove timings
+                         // Spigot end
+                     }
+                 }
+diff --git a/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java b/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java
+index cdefb2025eedea7e204d70d568adaf1c1ec4c03c..de645f5687d0288b5106cf97f7bc99925829265e 100644
+--- a/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java
++++ b/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java
+@@ -516,10 +516,10 @@ public class CraftScheduler implements BukkitScheduler {
+                 this.runners.remove(task.getTaskId());
+             }
+         }
+-        MinecraftTimings.bukkitSchedulerFinishTimer.startTiming(); // Paper
++        // Paper // HoloCons - remove timings
+         this.pending.addAll(temp);
+         temp.clear();
+-        MinecraftTimings.bukkitSchedulerFinishTimer.stopTiming(); // Paper
++        // Paper // HoloCons - remove timings
+         //this.debugHead = this.debugHead.getNextHead(currentTick); // Paper
+     }
+ 
+@@ -563,7 +563,7 @@ public class CraftScheduler implements BukkitScheduler {
+     }
+ 
+     void parsePending() { // Paper
+-        if (!this.isAsyncScheduler) MinecraftTimings.bukkitSchedulerPendingTimer.startTiming(); // Paper
++        // Paper // HoloCons - remove timings
+         CraftTask head = this.head;
+         CraftTask task = head.getNext();
+         CraftTask lastTask = head;
+@@ -582,7 +582,7 @@ public class CraftScheduler implements BukkitScheduler {
+             task.setNext(null);
+         }
+         this.head = lastTask;
+-        if (!this.isAsyncScheduler) MinecraftTimings.bukkitSchedulerPendingTimer.stopTiming(); // Paper
++        // Paper // HoloCons - remove timings
+     }
+ 
+     private boolean isReady(final int currentTick) {
+diff --git a/src/main/java/org/bukkit/craftbukkit/scheduler/CraftTask.java b/src/main/java/org/bukkit/craftbukkit/scheduler/CraftTask.java
+index 3f45bab0e9f7b3697e6d9d1092a1e6e579f7066f..b05842f33e836a2707dda52106e22fdc5f9475bf 100644
+--- a/src/main/java/org/bukkit/craftbukkit/scheduler/CraftTask.java
++++ b/src/main/java/org/bukkit/craftbukkit/scheduler/CraftTask.java
+@@ -96,7 +96,7 @@ public class CraftTask implements BukkitTask, Runnable { // Spigot
+ 
+     @Override
+     public void run() {
+-        try (Timing ignored = timings.startTiming()) { // Paper
++        { // Paper // HoloCons - remove timings
+         if (this.rTask != null) {
+             this.rTask.run();
+         } else {
+diff --git a/src/main/java/org/bukkit/craftbukkit/scoreboard/CraftScoreboardManager.java b/src/main/java/org/bukkit/craftbukkit/scoreboard/CraftScoreboardManager.java
+index 138407c2d4b0bc55ddb9aac5d2aa3edadda090fb..9d4eb3a887dc48054525a34c3a79fb9484cb6e14 100644
+--- a/src/main/java/org/bukkit/craftbukkit/scoreboard/CraftScoreboardManager.java
++++ b/src/main/java/org/bukkit/craftbukkit/scoreboard/CraftScoreboardManager.java
+@@ -115,7 +115,7 @@ public final class CraftScoreboardManager implements ScoreboardManager {
+     public void getScoreboardScores(ObjectiveCriteria criteria, String name, Consumer<Score> consumer) {
+         // Paper start - add timings for scoreboard search
+         // plugins leaking scoreboards will make this very expensive, let server owners debug it easily
+-        co.aikar.timings.MinecraftTimings.scoreboardScoreSearch.startTimingIfSync();
++        // HoloCons - remove timings
+         try {
+         // Paper end - add timings for scoreboard search
+         for (CraftScoreboard scoreboard : this.scoreboards) {
+@@ -123,7 +123,7 @@ public final class CraftScoreboardManager implements ScoreboardManager {
+             board.forAllObjectives(criteria, name, (score) -> consumer.accept(score));
+         }
+         } finally { // Paper start - add timings for scoreboard search
+-            co.aikar.timings.MinecraftTimings.scoreboardScoreSearch.stopTimingIfSync();
++            // HoloCons - remove timings
+         }
+         // Paper end - add timings for scoreboard search
+     }
+diff --git a/src/main/java/org/spigotmc/ActivationRange.java b/src/main/java/org/spigotmc/ActivationRange.java
+index e881584d38dc354204479863f004e974a0ac6c07..f40d581faeb73521fd963253d2005defdc03d0c6 100644
+--- a/src/main/java/org/spigotmc/ActivationRange.java
++++ b/src/main/java/org/spigotmc/ActivationRange.java
+@@ -165,7 +165,7 @@ public class ActivationRange
+      */
+     public static void activateEntities(Level world)
+     {
+-        MinecraftTimings.entityActivationCheckTimer.startTiming();
++        // HoloCons - remove timings
+         final int miscActivationRange = world.spigotConfig.miscActivationRange;
+         final int raiderActivationRange = world.spigotConfig.raiderActivationRange;
+         final int animalActivationRange = world.spigotConfig.animalActivationRange;
+@@ -219,7 +219,7 @@ public class ActivationRange
+             }
+             // Paper end
+         }
+-        MinecraftTimings.entityActivationCheckTimer.stopTiming();
++        // HoloCons - remove timings
+     }
+ 
+     /**
