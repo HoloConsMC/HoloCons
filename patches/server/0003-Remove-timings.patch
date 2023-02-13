@@ -49,7 +49,7 @@ index 27d4aa45e585842c04491839826d405d6f447f0e..02756f85cc1e1a6e66c2adfc6bb38340
                      } catch (Exception exception) {
                          net.minecraft.network.Connection networkmanager = listener.getConnection();
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 35a81dd726e3d065fce30de05b7ca6fada9fe484..a0f9e43b8f9fe4d45255d224fae3a2665be91354 100644
+index 34fa4d67505210ed20a5fff5fc5194ed2d21171e..b5ea43fdbd349d094db01f79509c9fe3c1aabeca 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -1381,15 +1381,15 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
