@@ -207,10 +207,10 @@ index 6483a1d461904a0584b6808b2f86ac7329bba963..fe8d62e90acc5d6ac58b724822694d83
                  i = this.context.runTopCommand(function, source);
              } finally {
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 51b3db0b6c2cede95b584268e035c0fb36d38094..8842bf1375ec17e2eecb52711cef728015d2f646 100644
+index a7e133f3495e9132a5fdae2c24f225e7b026295a..061bc63a5febddf603c5c7adfb2d71e86b7ba272 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -478,7 +478,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -485,7 +485,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
      }
  
      public void handleConsoleInputs() {
@@ -219,7 +219,7 @@ index 51b3db0b6c2cede95b584268e035c0fb36d38094..8842bf1375ec17e2eecb52711cef7280
          // Paper start - use proper queue
          ConsoleInput servercommand;
          while ((servercommand = this.serverCommandQueue.poll()) != null) {
-@@ -495,7 +495,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -502,7 +502,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
              // CraftBukkit end
          }
  
@@ -594,7 +594,7 @@ index 54c2b7fba83d6f06dba95b1bb5b487a02048d6e6..a726e66acab52cba2109729d970a9b18
              // Paper - rewrite chunk system - entity saving moved into ChunkHolder
  
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 3472f7f9b98d6d9c9f6465872803ef17fa67486d..e590e3b642c1ee1d0997f81071f0a5925fa18f8e 100644
+index 9b0b42add71172bd154226e51d62cebd8de3542e..e61801d83fb286b48ad00bb70eb995002bb2bd98 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -2494,7 +2494,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
