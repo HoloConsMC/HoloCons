@@ -1,0 +1,87 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Paul Sauve <paul@technove.co>
+Date: Sun, 19 Feb 2023 22:43:59 -0800
+Subject: [PATCH] Add Airplane patches
+
+Airplane
+Copyright (C) 2020 Technove LLC
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+Co-authored-by: Derek Lee <derek.scott.lee13@gmail.com>
+
+diff --git a/src/main/java/net/minecraft/world/entity/ambient/Bat.java b/src/main/java/net/minecraft/world/entity/ambient/Bat.java
+index 320c558bbe80d4bbc641e895ec43cfa2b45e8d70..c9550f196995b5341bac7111ab21742535c6e179 100644
+--- a/src/main/java/net/minecraft/world/entity/ambient/Bat.java
++++ b/src/main/java/net/minecraft/world/entity/ambient/Bat.java
+@@ -256,7 +256,19 @@ public class Bat extends AmbientCreature {
+         }
+     }
+ 
++    // Airplane start - only check for spooky season once an hour
++    private static final int ONE_HOUR = 20 * 60 * 60;
++    private static int lastSpookyCheckTick = -ONE_HOUR;
++    private static boolean isSpookySeason = false;
+     private static boolean isHalloween() {
++        if (net.minecraft.server.MinecraftServer.currentTick - lastSpookyCheckTick >= ONE_HOUR) {
++            lastSpookyCheckTick = net.minecraft.server.MinecraftServer.currentTick;
++            isSpookySeason = Bat.isHalloweenVanilla();
++        }
++        return isSpookySeason;
++    }
++    private static boolean isHalloweenVanilla() {
++        // Airplane end
+         LocalDate localdate = LocalDate.now();
+         int i = localdate.get(ChronoField.DAY_OF_MONTH);
+         int j = localdate.get(ChronoField.MONTH_OF_YEAR);
+diff --git a/src/main/java/net/minecraft/world/entity/player/Inventory.java b/src/main/java/net/minecraft/world/entity/player/Inventory.java
+index 5bc033bf59d49eda1f8f2574165bbcbeab7faa0f..f4a336aee41c170492b00c5d066d6177b5449e71 100644
+--- a/src/main/java/net/minecraft/world/entity/player/Inventory.java
++++ b/src/main/java/net/minecraft/world/entity/player/Inventory.java
+@@ -681,14 +681,12 @@ public class Inventory implements Container, Nameable {
+     }
+ 
+     public boolean contains(ItemStack stack) {
+-        Iterator iterator = this.compartments.iterator();
+-
+-        while (iterator.hasNext()) {
+-            List<ItemStack> list = (List) iterator.next();
+-            Iterator iterator1 = list.iterator();
+-
+-            while (iterator1.hasNext()) {
+-                ItemStack itemstack1 = (ItemStack) iterator1.next();
++        // Airplane start - remove iterators from inventory contains
++        for (int i = 0; i < this.compartments.size(); i++) {
++            List<ItemStack> list = this.compartments.get(i);
++            for (int j = 0; j < list.size(); j++) {
++                ItemStack itemstack1 = list.get(j);
++                // Airplane end
+ 
+                 if (!itemstack1.isEmpty() && ItemStack.isSameItemSameTags(itemstack1, stack)) {
+                     return true;
+diff --git a/src/main/java/net/minecraft/world/level/storage/loot/LootContext.java b/src/main/java/net/minecraft/world/level/storage/loot/LootContext.java
+index 35f9b11a3a61976c952a2c1c64bb2a932538f54f..80d6bba6a05686a6049b5d8c5c185e7154f805cf 100644
+--- a/src/main/java/net/minecraft/world/level/storage/loot/LootContext.java
++++ b/src/main/java/net/minecraft/world/level/storage/loot/LootContext.java
+@@ -41,8 +41,8 @@ public class LootContext {
+         this.level = world;
+         this.lootTables = tableGetter;
+         this.conditions = conditionGetter;
+-        this.params = ImmutableMap.copyOf(parameters);
+-        this.dynamicDrops = ImmutableMap.copyOf(drops);
++        this.params = java.util.Collections.unmodifiableMap(parameters); // Airplane - skip cloning loot parameters
++        this.dynamicDrops = java.util.Collections.unmodifiableMap(drops); // Airplane - skip cloning loot parameters
+     }
+ 
+     public boolean hasParam(LootContextParam<?> parameter) {
