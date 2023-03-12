@@ -49,7 +49,7 @@ index 27d4aa45e585842c04491839826d405d6f447f0e..02756f85cc1e1a6e66c2adfc6bb38340
                      } catch (Exception exception) {
                          net.minecraft.network.Connection networkmanager = listener.getConnection();
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 34fa4d67505210ed20a5fff5fc5194ed2d21171e..b5ea43fdbd349d094db01f79509c9fe3c1aabeca 100644
+index f9c91d1a30927e2eeced99a2478e04df877fc4e8..600252e9203c7d6b72e8ea02aa7e275249faf4bc 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -1381,15 +1381,15 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -175,7 +175,7 @@ index 34fa4d67505210ed20a5fff5fc5194ed2d21171e..b5ea43fdbd349d094db01f79509c9fe3
  
          this.profiler.pop();
      }
-@@ -2742,7 +2742,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -2741,7 +2741,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              return;
          }
  
@@ -184,7 +184,7 @@ index 34fa4d67505210ed20a5fff5fc5194ed2d21171e..b5ea43fdbd349d094db01f79509c9fe3
          try {
              for (;;) {
                  boolean moreTasks = this.tickMidTickTasks();
-@@ -2769,7 +2769,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -2768,7 +2768,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
                  }
              }
          } finally {
@@ -426,7 +426,7 @@ index ca84eddbdb1e198b899750e5f6b3eafd25ce970f..bb94fd55ab392d4409c46878cf4ce0c2
              // Paper end - use set of chunks requiring updates, rather than iterating every single one loaded
              // Paper start - controlled flush for entity tracker packets
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index 54c2b7fba83d6f06dba95b1bb5b487a02048d6e6..a726e66acab52cba2109729d970a9b188ad4426c 100644
+index e84c67f02bce4c2f9c4eeca1b888d53377fb20d7..686e5a75ffb24a3b1f62d5446e2bcf66b02f6da0 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
 @@ -666,7 +666,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
@@ -594,7 +594,7 @@ index 54c2b7fba83d6f06dba95b1bb5b487a02048d6e6..a726e66acab52cba2109729d970a9b18
              // Paper - rewrite chunk system - entity saving moved into ChunkHolder
  
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 9b0b42add71172bd154226e51d62cebd8de3542e..e61801d83fb286b48ad00bb70eb995002bb2bd98 100644
+index bac6b62419d85b3772ef243aa3d5f73311abdda7..4f3863b3f0d4d6be7b9183d50c8aa5bc1ea2a7bd 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -2494,7 +2494,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
@@ -625,10 +625,10 @@ index 9b0b42add71172bd154226e51d62cebd8de3542e..e61801d83fb286b48ad00bb70eb99500
      }
      // CraftBukkit end
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index 4b754f6eae683248d7fe11d6d6cb168d5dd696a2..601125456d1b073b180ffcb371ccbf977236c94b 100644
+index 835e439a1af327c67558653ef79ef7e59692a976..ba603113d1cd3c074a5f1b21b75b31ecbe0adb0c 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
-@@ -1185,7 +1185,7 @@ public abstract class PlayerList {
+@@ -1187,7 +1187,7 @@ public abstract class PlayerList {
  
      public void saveAll(int interval) {
          io.papermc.paper.util.MCUtil.ensureMain("Save Players" , () -> { // Paper - Ensure main
@@ -637,7 +637,7 @@ index 4b754f6eae683248d7fe11d6d6cb168d5dd696a2..601125456d1b073b180ffcb371ccbf97
          int numSaved = 0;
          long now = MinecraftServer.currentTick;
          for (int i = 0; i < this.players.size(); ++i) {
-@@ -1196,7 +1196,7 @@ public abstract class PlayerList {
+@@ -1198,7 +1198,7 @@ public abstract class PlayerList {
              }
              // Paper end
          }
@@ -696,10 +696,10 @@ index fcdb9bde8e1605e30dde3e580491522d4b62cdc0..c945893f1f0e6f11ec99b3b48d20004e
  
      }
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 3cbf801b2e5420c0e870f73788deb550e49ad54d..e6d127af078f5a37baaeae87114a1f5c681c9b08 100644
+index db971ca4136c7f922d630f38aa5c78cb04adbdfa..848dd632cdab93cc41fb2187f56c77dabf82c120 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -865,15 +865,15 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -867,15 +867,15 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
          ProfilerFiller gameprofilerfiller = this.getProfiler();
  
          gameprofilerfiller.push("blockEntities");
@@ -718,7 +718,7 @@ index 3cbf801b2e5420c0e870f73788deb550e49ad54d..e6d127af078f5a37baaeae87114a1f5c
          // Spigot start
          // Iterator iterator = this.blockEntityTickers.iterator();
          int tilesThisCycle = 0;
-@@ -906,7 +906,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -908,7 +908,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
          }
          this.blockEntityTickers.removeAll(toRemove);
  

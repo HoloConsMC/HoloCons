@@ -5,10 +5,10 @@ Subject: [PATCH] Remove profiler
 
 
 diff --git a/src/main/java/net/minecraft/commands/Commands.java b/src/main/java/net/minecraft/commands/Commands.java
-index 330f6c79417378da855326b4da665f9d240e748d..565da6aa880c3ac2d2750fccb31c3f29094fc6bf 100644
+index e92864ecf32dd984f6f87f7b05341e43af3a2977..e8fefe26428fd9b2e8d2417393bb54738a8c5ffd 100644
 --- a/src/main/java/net/minecraft/commands/Commands.java
 +++ b/src/main/java/net/minecraft/commands/Commands.java
-@@ -300,9 +300,9 @@ public class Commands {
+@@ -303,9 +303,9 @@ public class Commands {
      public int performCommand(ParseResults<CommandSourceStack> parseresults, String s, String label) { // CraftBukkit
          CommandSourceStack commandlistenerwrapper = (CommandSourceStack) parseresults.getContext().getSource();
  
@@ -20,7 +20,7 @@ index 330f6c79417378da855326b4da665f9d240e748d..565da6aa880c3ac2d2750fccb31c3f29
  
          byte b0;
  
-@@ -365,7 +365,7 @@ public class Commands {
+@@ -388,7 +388,7 @@ public class Commands {
                  b0 = 0;
              }
          } finally {
@@ -30,7 +30,7 @@ index 330f6c79417378da855326b4da665f9d240e748d..565da6aa880c3ac2d2750fccb31c3f29
  
          return b0;
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index b5ea43fdbd349d094db01f79509c9fe3c1aabeca..6359c72f37b7e2867aa7e9decdb14b7619141470 100644
+index 600252e9203c7d6b72e8ea02aa7e275249faf4bc..a9d1d283df882c15539ef7a7eedd80d900b5393f 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -334,13 +334,13 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -215,7 +215,7 @@ index b5ea43fdbd349d094db01f79509c9fe3c1aabeca..6359c72f37b7e2867aa7e9decdb14b76
      }
  
      public boolean isNetherEnabled() {
-@@ -2239,7 +2239,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -2238,7 +2238,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
      }
  
      public ProfilerFiller getProfiler() {
@@ -224,7 +224,7 @@ index b5ea43fdbd349d094db01f79509c9fe3c1aabeca..6359c72f37b7e2867aa7e9decdb14b76
      }
  
      public abstract boolean isSingleplayerOwner(GameProfile profile);
-@@ -2478,7 +2478,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -2477,7 +2477,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
      // CraftBukkit end
  
      private void startMetricsRecordingTick() {
@@ -233,7 +233,7 @@ index b5ea43fdbd349d094db01f79509c9fe3c1aabeca..6359c72f37b7e2867aa7e9decdb14b76
              this.metricsRecorder = ActiveMetricsRecorder.createStarted(new ServerMetricsSamplersProvider(Util.timeSource, this.isDedicatedServer()), Util.timeSource, Util.ioPool(), new MetricsPersister("server"), this.onMetricsRecordingStopped, (path) -> {
                  this.executeBlocking(() -> {
                      this.saveDebugReport(path.resolve("server"));
-@@ -2490,38 +2490,38 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -2489,38 +2489,38 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
  
          this.profiler = SingleTickProfiler.decorateFiller(this.metricsRecorder.getProfiler(), SingleTickProfiler.createTickProfiler("Server"));
          this.metricsRecorder.startTick();
@@ -282,7 +282,7 @@ index b5ea43fdbd349d094db01f79509c9fe3c1aabeca..6359c72f37b7e2867aa7e9decdb14b76
      }
  
      public Path getWorldPath(LevelResource worldSavePath) {
-@@ -2570,15 +2570,15 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -2569,15 +2569,15 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
      }
  
      public boolean isTimeProfilerRunning() {
@@ -516,7 +516,7 @@ index bb94fd55ab392d4409c46878cf4ce0c235f099e4..16d9e85128b3e739c08fd646e90cc2ad
          }
  
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index a726e66acab52cba2109729d970a9b188ad4426c..2ce56920c5ed3d3657ab9447ef36d7a9f65f4594 100644
+index 686e5a75ffb24a3b1f62d5446e2bcf66b02f6da0..6e6492de645d342bb92aec848f4271784fbed763 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
 @@ -633,12 +633,12 @@ public class ServerLevel extends Level implements WorldGenLevel {
@@ -721,7 +721,7 @@ index a726e66acab52cba2109729d970a9b188ad4426c..2ce56920c5ed3d3657ab9447ef36d7a9
  
                  while (iterator.hasNext()) {
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 7d6d3c8556033d289fdadc489e73fba478fce41a..32cddaed3fcd20b67bc54f9bfde07c56df4c13b1 100644
+index 289429eb464548acc80262a49444f49f8f57fc0c..a2fe59d19f47733176ca1af59c9002c0fc15d00c 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
 @@ -1149,7 +1149,7 @@ public class ServerPlayer extends Player {
@@ -754,7 +754,7 @@ index 7d6d3c8556033d289fdadc489e73fba478fce41a..32cddaed3fcd20b67bc54f9bfde07c56
                  this.connection.send(new ClientboundPlayerAbilitiesPacket(this.getAbilities()));
                  playerlist.sendLevelInfo(this, worldserver);
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index e590e3b642c1ee1d0997f81071f0a5925fa18f8e..0d1504d837c0e082b1486db95285660b3962f9ee 100644
+index 4f3863b3f0d4d6be7b9183d50c8aa5bc1ea2a7bd..3f84d5ec51d83c07c354b95cd9b42467693e73b2 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -390,7 +390,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
@@ -1468,7 +1468,7 @@ index d9104d996c854cce1ff167706c93747cd69c3969..ec1c27d9f3a30eb85380c946f516ab2e
      }
  
 diff --git a/src/main/java/net/minecraft/world/entity/animal/frog/Frog.java b/src/main/java/net/minecraft/world/entity/animal/frog/Frog.java
-index f2e84e832ad95df26fe3b9ba439ce38fc59b3585..8986374ddc9d77adcb20f63bcc4d4918d9f1c58b 100644
+index 63cb093e41ef9eed43c8bbb758596f8df324f47f..a6cd61413d1c48eca2d73c9a892ff9a37ab65fd4 100644
 --- a/src/main/java/net/minecraft/world/entity/animal/frog/Frog.java
 +++ b/src/main/java/net/minecraft/world/entity/animal/frog/Frog.java
 @@ -179,12 +179,12 @@ public class Frog extends Animal implements VariantHolder<FrogVariant> {
@@ -1627,10 +1627,10 @@ index 18eac340386a396c9850f53f30d20a41c1437788..621d9f954001cfeb5bd9f2b7dc2fa3cc
              this.assignProfessionWhenSpawned = false;
          }
 diff --git a/src/main/java/net/minecraft/world/level/Explosion.java b/src/main/java/net/minecraft/world/level/Explosion.java
-index a213f4098859858a73ddd601bbe8c7511972e0d5..c73e0fe76560f51191d13c8c1f494c11b28422ea 100644
+index 5ef6b5ad4dd69a57595914c7af8422ee2f6ad054..bc53270d53fb8e186ec4d0fe4c32787c926b71f2 100644
 --- a/src/main/java/net/minecraft/world/level/Explosion.java
 +++ b/src/main/java/net/minecraft/world/level/Explosion.java
-@@ -360,7 +360,7 @@ public class Explosion {
+@@ -363,7 +363,7 @@ public class Explosion {
                  if (!iblockdata.isAir() && iblockdata.isDestroyable()) { // Paper
                      BlockPos blockposition1 = blockposition.immutable();
  
@@ -1639,7 +1639,7 @@ index a213f4098859858a73ddd601bbe8c7511972e0d5..c73e0fe76560f51191d13c8c1f494c11
                      if (block.dropFromExplosion(this)) {
                          Level world = this.level;
  
-@@ -382,7 +382,7 @@ public class Explosion {
+@@ -385,7 +385,7 @@ public class Explosion {
  
                      this.level.setBlock(blockposition, Blocks.AIR.defaultBlockState(), 3);
                      block.wasExploded(this.level, blockposition, this);
@@ -1649,10 +1649,10 @@ index a213f4098859858a73ddd601bbe8c7511972e0d5..c73e0fe76560f51191d13c8c1f494c11
              }
  
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index e6d127af078f5a37baaeae87114a1f5c681c9b08..65741156e5d1b8c4a91ae2d19eaf91350743323d 100644
+index 848dd632cdab93cc41fb2187f56c77dabf82c120..db4de8abbbc31543a689c12a2fcbae41e9e7c8a1 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -561,9 +561,9 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -563,9 +563,9 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
                  BlockState iblockdata2 = this.getBlockState(pos);
  
                  if ((flags & 128) == 0 && iblockdata2 != iblockdata1 && (iblockdata2.getLightBlock(this, pos) != iblockdata1.getLightBlock(this, pos) || iblockdata2.getLightEmission() != iblockdata1.getLightEmission() || iblockdata2.useShapeForLightOcclusion() || iblockdata1.useShapeForLightOcclusion())) {
@@ -1664,7 +1664,7 @@ index e6d127af078f5a37baaeae87114a1f5c681c9b08..65741156e5d1b8c4a91ae2d19eaf9135
                  }
  
                  /*
-@@ -862,9 +862,9 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -864,9 +864,9 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
      }
  
      protected void tickBlockEntities() {
@@ -1676,7 +1676,7 @@ index e6d127af078f5a37baaeae87114a1f5c681c9b08..65741156e5d1b8c4a91ae2d19eaf9135
          // Spigot // HoloCons - remove timings
          this.tickingBlockEntities = true;
          if (!this.pendingBlockEntityTickers.isEmpty()) {
-@@ -909,7 +909,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -911,7 +911,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
          // Spigot // HoloCons - remove timings
          this.tickingBlockEntities = false;
          co.aikar.timings.TimingHistory.tileEntityTicks += this.blockEntityTickers.size(); // Paper
@@ -1685,7 +1685,7 @@ index e6d127af078f5a37baaeae87114a1f5c681c9b08..65741156e5d1b8c4a91ae2d19eaf9135
          spigotConfig.currentPrimedTnt = 0; // Spigot
      }
  
-@@ -1102,7 +1102,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -1104,7 +1104,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
  
      @Override
      public List<Entity> getEntities(@Nullable Entity except, AABB box, Predicate<? super Entity> predicate) {
@@ -1694,7 +1694,7 @@ index e6d127af078f5a37baaeae87114a1f5c681c9b08..65741156e5d1b8c4a91ae2d19eaf9135
          List<Entity> list = Lists.newArrayList();
          ((ServerLevel)this).getEntityLookup().getEntities(except, box, list, predicate); // Paper - optimise this call
          return list;
-@@ -1121,7 +1121,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -1123,7 +1123,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
      }
  
      public <T extends Entity> void getEntities(EntityTypeTest<Entity, T> filter, AABB box, Predicate<? super T> predicate, List<? super T> result, int limit) {
@@ -1703,7 +1703,7 @@ index e6d127af078f5a37baaeae87114a1f5c681c9b08..65741156e5d1b8c4a91ae2d19eaf9135
          // Paper start - optimise this call
          //TODO use limit
          if (filter instanceof net.minecraft.world.entity.EntityType entityTypeTest) {
-@@ -1450,7 +1450,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -1452,7 +1452,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
      }
  
      public ProfilerFiller getProfiler() {
