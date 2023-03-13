@@ -1,0 +1,18 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Derek Lee <derek.scott.lee13@gmail.com>
+Date: Mon, 13 Mar 2023 05:17:37 -0700
+Subject: [PATCH] Improve plugin loading strategy
+
+
+diff --git a/src/main/java/io/papermc/paper/plugin/storage/SimpleProviderStorage.java b/src/main/java/io/papermc/paper/plugin/storage/SimpleProviderStorage.java
+index a7085dbf2c5ace9b6887d024c0785fa529e0f1da..8b545e4b033da4311cd406578916ce58f0e100af 100644
+--- a/src/main/java/io/papermc/paper/plugin/storage/SimpleProviderStorage.java
++++ b/src/main/java/io/papermc/paper/plugin/storage/SimpleProviderStorage.java
+@@ -30,6 +30,7 @@ public abstract class SimpleProviderStorage<T> implements ProviderStorage<T> {
+     public void enter() {
+         List<PluginProvider<T>> providerList = new ArrayList<>(this.providers);
+         this.filterLoadingProviders(providerList);
++        providerList.sort(java.util.Comparator.comparingLong(provider -> provider.getSource().toFile().lastModified())); // HoloCons - improve plugin loading strategy
+ 
+         try {
+             for (ProviderLoadingStrategy.ProviderPair<T> providerPair : this.strategy.loadProviders(providerList)) {
