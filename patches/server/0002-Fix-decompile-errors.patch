@@ -4,19 +4,6 @@ Date: Sun, 12 Feb 2023 22:14:05 -0800
 Subject: [PATCH] Fix decompile errors
 
 
-diff --git a/src/main/java/net/minecraft/world/entity/decoration/Painting.java b/src/main/java/net/minecraft/world/entity/decoration/Painting.java
-index 0c5caad2a5bfc14450cf8d37f988ee176e8d1450..1058132a82d274c8d58c5a63b635dc51f7ded0bb 100644
---- a/src/main/java/net/minecraft/world/entity/decoration/Painting.java
-+++ b/src/main/java/net/minecraft/world/entity/decoration/Painting.java
-@@ -124,7 +124,7 @@ public class Painting extends HangingEntity implements VariantHolder<Holder<Pain
-             return ResourceKey.create(Registries.PAINTING_VARIANT, id);
-         }).flatMap(BuiltInRegistries.PAINTING_VARIANT::getHolder).map((entry) -> {
-             return entry;
--        }).orElseGet(Painting::getDefaultVariant);
-+        }).orElseGet(() -> (Holder.Reference<PaintingVariant>) getDefaultVariant()); // HoloCons - fix decompile error
-         this.setVariant(holder);
-         this.direction = Direction.from2DDataValue(nbt.getByte("facing"));
-         super.readAdditionalSaveData(nbt);
 diff --git a/src/main/java/net/minecraft/world/entity/monster/Zoglin.java b/src/main/java/net/minecraft/world/entity/monster/Zoglin.java
 index 5956a7759964f5e4939f062e93714fba64f53141..dd26d7b7fcae0bdab43a9b51c09011e7db761787 100644
 --- a/src/main/java/net/minecraft/world/entity/monster/Zoglin.java
@@ -43,16 +30,3 @@ index ac75c54e897565e340b66823caeed92ba1d1641a..a1fbeec73fbd11915a276ccbf490ee9b
      }
  
      @Override
-diff --git a/src/main/java/net/minecraft/world/level/block/Blocks.java b/src/main/java/net/minecraft/world/level/block/Blocks.java
-index 42f46d338886e2892ee4219d19be4dc97f61616f..d00a69d2d7b37364330af0cd4c8368cf0f692dec 100644
---- a/src/main/java/net/minecraft/world/level/block/Blocks.java
-+++ b/src/main/java/net/minecraft/world/level/block/Blocks.java
-@@ -1127,7 +1127,7 @@ public class Blocks {
-     }
- 
-     private static Boolean ocelotOrParrot(BlockState state, BlockGetter world, BlockPos pos, EntityType<?> type) {
--        return (boolean)type == EntityType.OCELOT || type == EntityType.PARROT;
-+        return type == EntityType.OCELOT || type == EntityType.PARROT; // HoloCons - fix decompile error
-     }
- 
-     private static BedBlock bed(DyeColor color) {

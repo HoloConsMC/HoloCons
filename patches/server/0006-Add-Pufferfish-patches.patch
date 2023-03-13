@@ -1,0 +1,20 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Kevin Raneri <kevin.raneri@gmail.com>
+Date: Tue, 9 Nov 2021 14:33:16 -0500
+Subject: [PATCH] Add Pufferfish patches
+
+Co-authored-by: Derek Lee <derek.scott.lee13@gmail.com>
+
+diff --git a/src/main/java/io/papermc/paper/util/MCUtil.java b/src/main/java/io/papermc/paper/util/MCUtil.java
+index 6efb8b10f17c70b05128039376d254e6beda3841..77d55310d5a458e1f161c1bff71d8e68fada1173 100644
+--- a/src/main/java/io/papermc/paper/util/MCUtil.java
++++ b/src/main/java/io/papermc/paper/util/MCUtil.java
+@@ -210,7 +210,7 @@ public final class MCUtil {
+     }
+ 
+     public static long getCoordinateKey(final Entity entity) {
+-        return ((long)(MCUtil.fastFloor(entity.getZ()) >> 4) << 32) | ((MCUtil.fastFloor(entity.getX()) >> 4) & 0xFFFFFFFFL);
++        return ((long)(entity.getBlockZ() >> 4) << 32) | ((entity.getBlockX() >> 4) & 0xFFFFFFFFL); // Pufferfish - optimize entity coordinate key
+     }
+ 
+     public static long getCoordinateKey(final ChunkPos pair) {
