@@ -1,0 +1,523 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Derek Lee <derek.scott.lee13@gmail.com>
+Date: Fri, 17 Mar 2023 12:31:17 -0700
+Subject: [PATCH] Improve container checking with a bitset
+
+
+diff --git a/src/main/java/net/minecraft/world/CompoundContainer.java b/src/main/java/net/minecraft/world/CompoundContainer.java
+index 241fec02e6869c638d3a160819b32173a081467b..a94617e20a05baac90ec22e74f39c1faf76f3e40 100644
+--- a/src/main/java/net/minecraft/world/CompoundContainer.java
++++ b/src/main/java/net/minecraft/world/CompoundContainer.java
+@@ -141,4 +141,15 @@ public class CompoundContainer implements Container {
+         this.container1.clearContent();
+         this.container2.clearContent();
+     }
++    // HoloCons start - improve container checking with a bitset
++    @Override
++    public boolean isCompletelyFull() {
++        return this.container1.isCompletelyFull() && this.container2.isCompletelyFull();
++    }
++
++    @Override
++    public boolean isCompletelyEmpty() {
++        return this.container1.isCompletelyEmpty() && this.container2.isCompletelyEmpty();
++    }
++    // HoloCons end
+ }
+diff --git a/src/main/java/net/minecraft/world/Container.java b/src/main/java/net/minecraft/world/Container.java
+index 540bc9500c35c0db719b00aa26f6fb3a1b08ed9f..33b077706d6758f3e73211218348992f6e90a649 100644
+--- a/src/main/java/net/minecraft/world/Container.java
++++ b/src/main/java/net/minecraft/world/Container.java
+@@ -95,4 +95,26 @@ public interface Container extends Clearable {
+ 
+     int MAX_STACK = 64;
+     // CraftBukkit end
++    // HoloCons start - improve container checking with a bitset
++    default boolean isCompletelyFull() {
++        final int size = this.getContainerSize();
++        for (int i = 0; i < size; i++) {
++            final ItemStack itemStack = this.getItem(i);
++            if (itemStack.getCount() <= 0 || itemStack.getCount() < itemStack.getMaxStackSize()) {
++                return false;
++            }
++        }
++        return true;
++    }
++
++    default boolean isCompletelyEmpty() {
++        final int size = this.getContainerSize();
++        for (int i = 0; i < size; i++) {
++            if (this.getItem(i).getCount() > 0) {
++                return false;
++            }
++        }
++        return true;
++    }
++    // HoloCons end
+ }
+diff --git a/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecartContainer.java b/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecartContainer.java
+index cc74eeb45913fab03e85969957215d2811252a83..7cb36d2087c2983e675d0b87d681dc303203b270 100644
+--- a/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecartContainer.java
++++ b/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecartContainer.java
+@@ -27,7 +27,7 @@ import org.bukkit.inventory.InventoryHolder;
+ 
+ public abstract class AbstractMinecartContainer extends AbstractMinecart implements ContainerEntity {
+ 
+-    private NonNullList<ItemStack> itemStacks;
++    private xyz.holocons.mc.ItemListWithBitSet itemStacks; // HoloCons - improve container checking with a bitset
+     @Nullable
+     public ResourceLocation lootTable;
+     public long lootTableSeed;
+@@ -89,12 +89,12 @@ public abstract class AbstractMinecartContainer extends AbstractMinecart impleme
+ 
+     protected AbstractMinecartContainer(EntityType<?> type, Level world) {
+         super(type, world);
+-        this.itemStacks = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY); // CraftBukkit - SPIGOT-3513
++        this.itemStacks = xyz.holocons.mc.ItemListWithBitSet.withSize(this.getContainerSize()); // CraftBukkit - SPIGOT-3513 // HoloCons - improve container checking with a bitset
+     }
+ 
+     protected AbstractMinecartContainer(EntityType<?> type, double x, double y, double z, Level world) {
+         super(type, world, x, y, z);
+-        this.itemStacks = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY); // CraftBukkit - SPIGOT-3513
++        this.itemStacks = xyz.holocons.mc.ItemListWithBitSet.withSize(this.getContainerSize()); // CraftBukkit - SPIGOT-3513 // HoloCons - improve container checking with a bitset
+     }
+ 
+     @Override
+@@ -232,6 +232,17 @@ public abstract class AbstractMinecartContainer extends AbstractMinecart impleme
+ 
+     @Override
+     public void clearItemStacks() {
+-        this.itemStacks = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
++        this.itemStacks = xyz.holocons.mc.ItemListWithBitSet.withSize(this.getContainerSize()); // HoloCons - improve container checking with a bitset
+     }
++    // HoloCons start - improve container checking with a bitset
++    @Override
++    public boolean isCompletelyFull() {
++        return this.itemStacks.isCompletelyFull();
++    }
++
++    @Override
++    public boolean isCompletelyEmpty() {
++        return this.itemStacks.isCompletelyEmpty();
++    }
++    // HoloCons end
+ }
+diff --git a/src/main/java/net/minecraft/world/entity/vehicle/ChestBoat.java b/src/main/java/net/minecraft/world/entity/vehicle/ChestBoat.java
+index a99e2586962952332dd9904ef5bb50a0d3083266..f3c110154794d7b584896e06d6a59272deec1e01 100644
+--- a/src/main/java/net/minecraft/world/entity/vehicle/ChestBoat.java
++++ b/src/main/java/net/minecraft/world/entity/vehicle/ChestBoat.java
+@@ -34,14 +34,14 @@ import org.bukkit.inventory.InventoryHolder;
+ public class ChestBoat extends Boat implements HasCustomInventoryScreen, ContainerEntity {
+ 
+     private static final int CONTAINER_SIZE = 27;
+-    private NonNullList<ItemStack> itemStacks;
++    private xyz.holocons.mc.ItemListWithBitSet itemStacks; // HoloCons - improve container checking with a bitset
+     @Nullable
+     private ResourceLocation lootTable;
+     private long lootTableSeed;
+ 
+     public ChestBoat(EntityType<? extends Boat> type, Level world) {
+         super(type, world);
+-        this.itemStacks = NonNullList.withSize(27, ItemStack.EMPTY);
++        this.itemStacks = xyz.holocons.mc.ItemListWithBitSet.withSize(27); // HoloCons - improve container checking with a bitset
+     }
+ 
+     public ChestBoat(Level world, double d0, double d1, double d2) {
+@@ -225,7 +225,7 @@ public class ChestBoat extends Boat implements HasCustomInventoryScreen, Contain
+ 
+     @Override
+     public void clearItemStacks() {
+-        this.itemStacks = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
++        this.itemStacks = xyz.holocons.mc.ItemListWithBitSet.withSize(this.getContainerSize()); // HoloCons - improve container checking with a bitset
+     }
+ 
+     // Paper start
+@@ -288,4 +288,15 @@ public class ChestBoat extends Boat implements HasCustomInventoryScreen, Contain
+         return getBukkitEntity().getLocation();
+     }
+     // CraftBukkit end
++    // HoloCons start - improve container checking with a bitset
++    @Override
++    public boolean isCompletelyFull() {
++        return this.itemStacks.isCompletelyFull();
++    }
++
++    @Override
++    public boolean isCompletelyEmpty() {
++        return this.itemStacks.isCompletelyEmpty();
++    }
++    // HoloCons end
+ }
+diff --git a/src/main/java/net/minecraft/world/level/block/entity/BarrelBlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/BarrelBlockEntity.java
+index 416aa989ebb18a8741cc9d605a1180ab830f6643..b6df9549246b070f42722fe4ab23658a75e9a81d 100644
+--- a/src/main/java/net/minecraft/world/level/block/entity/BarrelBlockEntity.java
++++ b/src/main/java/net/minecraft/world/level/block/entity/BarrelBlockEntity.java
+@@ -62,12 +62,12 @@ public class BarrelBlockEntity extends RandomizableContainerBlockEntity {
+         this.maxStack = i;
+     }
+     // CraftBukkit end
+-    private NonNullList<ItemStack> items;
++    private xyz.holocons.mc.ItemListWithBitSet items; // HoloCons - improve container checking with a bitset
+     public final ContainerOpenersCounter openersCounter;
+ 
+     public BarrelBlockEntity(BlockPos pos, BlockState state) {
+         super(BlockEntityType.BARREL, pos, state);
+-        this.items = NonNullList.withSize(27, ItemStack.EMPTY);
++        this.items = xyz.holocons.mc.ItemListWithBitSet.withSize(27); // HoloCons - improve container checking with a bitset
+         this.openersCounter = new ContainerOpenersCounter() {
+             @Override
+             protected void onOpen(Level world, BlockPos pos, BlockState state) {
+@@ -109,7 +109,7 @@ public class BarrelBlockEntity extends RandomizableContainerBlockEntity {
+     @Override
+     public void load(CompoundTag nbt) {
+         super.load(nbt);
+-        this.items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
++        this.items = xyz.holocons.mc.ItemListWithBitSet.withSize(this.getContainerSize()); // HoloCons - improve container checking with a bitset
+         if (!this.tryLoadLootTable(nbt)) {
+             ContainerHelper.loadAllItems(nbt, this.items);
+         }
+@@ -128,7 +128,7 @@ public class BarrelBlockEntity extends RandomizableContainerBlockEntity {
+ 
+     @Override
+     protected void setItems(NonNullList<ItemStack> list) {
+-        this.items = list;
++        this.items = xyz.holocons.mc.ItemListWithBitSet.fromList(list); // HoloCons - improve container checking with a bitset
+     }
+ 
+     @Override
+@@ -176,4 +176,15 @@ public class BarrelBlockEntity extends RandomizableContainerBlockEntity {
+ 
+         this.level.playSound((Player) null, d0, d1, d2, soundEvent, SoundSource.BLOCKS, 0.5F, this.level.random.nextFloat() * 0.1F + 0.9F);
+     }
++    // HoloCons start - improve container checking with a bitset
++    @Override
++    public boolean isCompletelyFull() {
++        return this.items.isCompletelyFull();
++    }
++
++    @Override
++    public boolean isCompletelyEmpty() {
++        return this.items.isCompletelyEmpty();
++    }
++    // HoloCons end
+ }
+diff --git a/src/main/java/net/minecraft/world/level/block/entity/ChestBlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/ChestBlockEntity.java
+index a71414397bd45ee7bcacfeef0041d80dfa25f114..b1ddede3b093cddab19c672ad28f763decdc3152 100644
+--- a/src/main/java/net/minecraft/world/level/block/entity/ChestBlockEntity.java
++++ b/src/main/java/net/minecraft/world/level/block/entity/ChestBlockEntity.java
+@@ -31,7 +31,7 @@ import org.bukkit.entity.HumanEntity;
+ public class ChestBlockEntity extends RandomizableContainerBlockEntity implements LidBlockEntity {
+ 
+     private static final int EVENT_SET_OPEN_COUNT = 1;
+-    private NonNullList<ItemStack> items;
++    private xyz.holocons.mc.ItemListWithBitSet items; // HoloCons - improve container checking with a bitset
+     public final ContainerOpenersCounter openersCounter;
+     private final ChestLidController chestLidController;
+ 
+@@ -67,7 +67,7 @@ public class ChestBlockEntity extends RandomizableContainerBlockEntity implement
+ 
+     protected ChestBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+         super(type, pos, state);
+-        this.items = NonNullList.withSize(27, ItemStack.EMPTY);
++        this.items = xyz.holocons.mc.ItemListWithBitSet.withSize(27); // HoloCons - improve container checking with a bitset
+         this.openersCounter = new ContainerOpenersCounter() {
+             @Override
+             protected void onOpen(Level world, BlockPos pos, BlockState state) {
+@@ -115,7 +115,7 @@ public class ChestBlockEntity extends RandomizableContainerBlockEntity implement
+     @Override
+     public void load(CompoundTag nbt) {
+         super.load(nbt);
+-        this.items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
++        this.items = xyz.holocons.mc.ItemListWithBitSet.withSize(this.getContainerSize()); // HoloCons - improve container checking with a bitset
+         if (!this.tryLoadLootTable(nbt)) {
+             ContainerHelper.loadAllItems(nbt, this.items);
+         }
+@@ -187,7 +187,7 @@ public class ChestBlockEntity extends RandomizableContainerBlockEntity implement
+ 
+     @Override
+     protected void setItems(NonNullList<ItemStack> list) {
+-        this.items = list;
++        this.items = xyz.holocons.mc.ItemListWithBitSet.fromList(list); // HoloCons - improve container checking with a bitset
+     }
+ 
+     @Override
+@@ -240,4 +240,15 @@ public class ChestBlockEntity extends RandomizableContainerBlockEntity implement
+         return false; // Paper
+     }
+     // CraftBukkit end
++    // HoloCons start - improve container checking with a bitset
++    @Override
++    public boolean isCompletelyFull() {
++        return this.items.isCompletelyFull();
++    }
++
++    @Override
++    public boolean isCompletelyEmpty() {
++        return this.items.isCompletelyEmpty();
++    }
++    // HoloCons end
+ }
+diff --git a/src/main/java/net/minecraft/world/level/block/entity/DispenserBlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/DispenserBlockEntity.java
+index 881379681c39230a00b3a1f11cd87498984396c7..e6fe1815f7b628f937c5b117cb5a0f1ae4fc5800 100644
+--- a/src/main/java/net/minecraft/world/level/block/entity/DispenserBlockEntity.java
++++ b/src/main/java/net/minecraft/world/level/block/entity/DispenserBlockEntity.java
+@@ -21,7 +21,7 @@ import org.bukkit.entity.HumanEntity;
+ public class DispenserBlockEntity extends RandomizableContainerBlockEntity {
+ 
+     public static final int CONTAINER_SIZE = 9;
+-    private NonNullList<ItemStack> items;
++    private xyz.holocons.mc.ItemListWithBitSet items; // HoloCons - improve container checking with a bitset
+ 
+     // CraftBukkit start - add fields and methods
+     public List<HumanEntity> transaction = new java.util.ArrayList<HumanEntity>();
+@@ -55,7 +55,7 @@ public class DispenserBlockEntity extends RandomizableContainerBlockEntity {
+ 
+     protected DispenserBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+         super(type, pos, state);
+-        this.items = NonNullList.withSize(9, ItemStack.EMPTY);
++        this.items = xyz.holocons.mc.ItemListWithBitSet.withSize(9); // HoloCons - improve container checking with a bitset
+     }
+ 
+     public DispenserBlockEntity(BlockPos pos, BlockState state) {
+@@ -100,7 +100,7 @@ public class DispenserBlockEntity extends RandomizableContainerBlockEntity {
+     @Override
+     public void load(CompoundTag nbt) {
+         super.load(nbt);
+-        this.items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
++        this.items = xyz.holocons.mc.ItemListWithBitSet.withSize(this.getContainerSize()); // HoloCons - improve container checking with a bitset
+         if (!this.tryLoadLootTable(nbt)) {
+             ContainerHelper.loadAllItems(nbt, this.items);
+         }
+@@ -123,11 +123,22 @@ public class DispenserBlockEntity extends RandomizableContainerBlockEntity {
+ 
+     @Override
+     protected void setItems(NonNullList<ItemStack> list) {
+-        this.items = list;
++        this.items = xyz.holocons.mc.ItemListWithBitSet.fromList(list); // HoloCons - improve container checking with a bitset
+     }
+ 
+     @Override
+     protected AbstractContainerMenu createMenu(int syncId, Inventory playerInventory) {
+         return new DispenserMenu(syncId, playerInventory, this);
+     }
++    // HoloCons start - improve container checking with a bitset
++    @Override
++    public boolean isCompletelyFull() {
++        return this.items.isCompletelyFull();
++    }
++
++    @Override
++    public boolean isCompletelyEmpty() {
++        return this.items.isCompletelyEmpty();
++    }
++    // HoloCons end
+ }
+diff --git a/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java
+index d76603c4172aa10889949c6c2acff05fee02a13d..8487379db591c961fce3ef1e81c110f1e93582a6 100644
+--- a/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java
++++ b/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java
+@@ -45,7 +45,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+ 
+     public static final int MOVE_ITEM_SPEED = 8;
+     public static final int HOPPER_CONTAINER_SIZE = 5;
+-    private NonNullList<ItemStack> items;
++    private xyz.holocons.mc.ItemListWithBitSet items; // HoloCons - improve container checking with a bitset
+     private int cooldownTime;
+     private long tickedGameTime;
+ 
+@@ -81,14 +81,14 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+ 
+     public HopperBlockEntity(BlockPos pos, BlockState state) {
+         super(BlockEntityType.HOPPER, pos, state);
+-        this.items = NonNullList.withSize(5, ItemStack.EMPTY);
++        this.items = xyz.holocons.mc.ItemListWithBitSet.withSize(5);
+         this.cooldownTime = -1;
+     }
+ 
+     @Override
+     public void load(CompoundTag nbt) {
+         super.load(nbt);
+-        this.items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
++        this.items = xyz.holocons.mc.ItemListWithBitSet.withSize(this.getContainerSize()); // HoloCons - improve container checking with a bitset
+         if (!this.tryLoadLootTable(nbt)) {
+             ContainerHelper.loadAllItems(nbt, this.items);
+         }
+@@ -156,11 +156,11 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+             if (!blockEntity.isOnCooldown() && (Boolean) state.getValue(HopperBlock.ENABLED)) {
+                 boolean flag = false;
+ 
+-                if (!blockEntity.isEmpty()) {
++                if (!blockEntity.isCompletelyEmpty()) { // HoloCons - improve container checking with a bitset
+                     flag = HopperBlockEntity.ejectItems(world, pos, state, (Container) blockEntity, blockEntity); // CraftBukkit
+                 }
+ 
+-                if (!blockEntity.inventoryFull()) {
++                if (!blockEntity.isCompletelyFull()) { // HoloCons - improve container checking with a bitset
+                     flag |= booleansupplier.getAsBoolean();
+                 }
+ 
+@@ -197,11 +197,12 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+ 
+     private static boolean hopperPush(final Level level, final Container destination, final Direction direction, final HopperBlockEntity hopper) {
+         skipPushModeEventFire = skipHopperEvents;
+-        boolean foundItem = false;
++        // HoloCons start - improve container checking with a bitset
++        final boolean foundItem = !hopper.isCompletelyEmpty();
+         for (int i = 0; i < hopper.getContainerSize(); ++i) {
+-            final ItemStack item = hopper.getItem(i);
+-            if (!item.isEmpty()) {
+-                foundItem = true;
++            if (hopper.items.hasStack(i)) {
++                final ItemStack item = hopper.getItem(i);
++                // HoloCons end
+                 ItemStack origItemStack = item;
+                 ItemStack movedItem = origItemStack;
+ 
+@@ -408,12 +409,12 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+     }
+ 
+     private static boolean isFullContainer(Container inventory, Direction direction) {
+-        return allMatch(inventory, direction, STACK_SIZE_TEST); // Paper - no streams
++        return inventory instanceof WorldlyContainer ? allMatch(inventory, direction, STACK_SIZE_TEST) : inventory.isCompletelyFull(); // Paper - no streams // HoloCons - improve container checking with a bitset
+     }
+ 
+     private static boolean isEmptyContainer(Container inv, Direction facing) {
+         // Paper start
+-        return allMatch(inv, facing, IS_EMPTY_TEST);
++        return inv instanceof WorldlyContainer ? allMatch(inv, facing, IS_EMPTY_TEST) : inv.isCompletelyEmpty(); // HoloCons - improve container checking with a bitset
+     }
+     private static boolean allMatch(Container iinventory, Direction enumdirection, java.util.function.BiPredicate<ItemStack, Integer> test) {
+         if (iinventory instanceof WorldlyContainer) {
+@@ -592,7 +593,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+ 
+         if (HopperBlockEntity.canPlaceItemInContainer(to, stack, slot, side)) {
+             boolean flag = false;
+-            boolean flag1 = to.isEmpty();
++            boolean flag1 = to.isCompletelyEmpty(); // HoloCons - improve container checking with a bitset
+ 
+             if (itemstack1.isEmpty()) {
+                 // Spigot start - SPIGOT-6693, InventorySubcontainer#setItem
+@@ -745,7 +746,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+ 
+     @Override
+     protected void setItems(NonNullList<ItemStack> list) {
+-        this.items = list;
++        this.items = xyz.holocons.mc.ItemListWithBitSet.fromList(list); // HoloCons - improve container checking with a bitset
+     }
+ 
+     public static void entityInside(Level world, BlockPos pos, BlockState state, Entity entity, HopperBlockEntity blockEntity) {
+@@ -761,4 +762,15 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+     protected AbstractContainerMenu createMenu(int syncId, net.minecraft.world.entity.player.Inventory playerInventory) {
+         return new HopperMenu(syncId, playerInventory, this);
+     }
++    // HoloCons start - improve container checking with a bitset
++    @Override
++    public boolean isCompletelyFull() {
++        return this.items.isCompletelyFull();
++    }
++
++    @Override
++    public boolean isCompletelyEmpty() {
++        return this.items.isCompletelyEmpty();
++    }
++    // HoloCons end
+ }
+diff --git a/src/main/java/xyz/holocons/mc/ItemListWithBitSet.java b/src/main/java/xyz/holocons/mc/ItemListWithBitSet.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..d14aae42f934174c09f6089d820bb89e3c40f027
+--- /dev/null
++++ b/src/main/java/xyz/holocons/mc/ItemListWithBitSet.java
+@@ -0,0 +1,93 @@
++package xyz.holocons.mc;
++
++import java.util.Arrays;
++import java.util.List;
++import java.util.RandomAccess;
++
++import javax.annotation.Nonnull;
++
++import org.apache.commons.lang.Validate;
++
++import net.minecraft.core.NonNullList;
++import net.minecraft.world.item.ItemStack;
++
++public class ItemListWithBitSet extends NonNullList<ItemStack> implements RandomAccess {
++
++    private final long allBits;
++    private long bitSet;
++
++    public static ItemListWithBitSet fromList(@Nonnull List<ItemStack> list) {
++        if (list instanceof ItemListWithBitSet itemListWithBitSet) {
++            return itemListWithBitSet;
++        }
++        final int size = list.size();
++        final var itemListWithBitSet = new ItemListWithBitSet(new ItemStack[size]);
++        for (int i = 0; i < size; i++) {
++            itemListWithBitSet.set(i, list.get(i));
++        }
++        return itemListWithBitSet;
++    }
++
++    public static ItemListWithBitSet withSize(int size) {
++        final var array = new ItemStack[size];
++        Arrays.fill(array, ItemStack.EMPTY);
++        return new ItemListWithBitSet(array);
++    }
++
++    private ItemListWithBitSet(ItemStack[] array) {
++        super(Arrays.asList(array), ItemStack.EMPTY);
++        Validate.isTrue(array.length < Long.BYTES * 8, "size is too large");
++        this.allBits = (1L << array.length) - 1;
++        this.bitSet = 0L;
++    }
++
++    private static boolean testBitMask(long bitSet, long bitMask) {
++        return (bitSet & bitMask) == bitMask;
++    }
++
++    private static boolean hasFullStacks(ItemListWithBitSet list) {
++        final int size = list.size();
++        for (int i = 0; i < size; i++) {
++            final var itemStack = list.get(i);
++            if (itemStack.getCount() < itemStack.getMaxStackSize()) {
++                return false;
++            }
++        }
++        return true;
++    }
++
++    public boolean isCompletelyFull() {
++        return ItemListWithBitSet.testBitMask(this.bitSet, this.allBits) && ItemListWithBitSet.hasFullStacks(this);
++    }
++
++    public boolean isCompletelyEmpty() {
++        return this.bitSet == 0L;
++    }
++
++    public boolean hasStack(int index) {
++        return ItemListWithBitSet.testBitMask(this.bitSet, 1L << index);
++    }
++
++    @Nonnull
++    @Override
++    public ItemStack set(int index, @Nonnull ItemStack itemStack) {
++        this.bitSet = itemStack.isEmpty() ? bitSet & ~(1L << index) : bitSet | 1L << index;
++        return super.set(index, itemStack);
++    }
++
++    @Override
++    public void add(int index, ItemStack itemStack) {
++        throw new UnsupportedOperationException();
++    }
++
++    @Override
++    public ItemStack remove(int index) {
++        throw new UnsupportedOperationException();
++    }
++
++    @Override
++    public void clear() {
++        this.bitSet = 0L;
++        super.clear();
++    }
++}
