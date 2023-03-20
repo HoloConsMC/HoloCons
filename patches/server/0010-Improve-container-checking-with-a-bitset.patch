@@ -313,7 +313,7 @@ index 881379681c39230a00b3a1f11cd87498984396c7..e6fe1815f7b628f937c5b117cb5a0f1a
 +    // HoloCons end
  }
 diff --git a/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-index d76603c4172aa10889949c6c2acff05fee02a13d..8487379db591c961fce3ef1e81c110f1e93582a6 100644
+index d76603c4172aa10889949c6c2acff05fee02a13d..19e5a570d6b2ffa3176024c9c6036636a3bb3363 100644
 --- a/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 @@ -45,7 +45,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
@@ -356,7 +356,7 @@ index d76603c4172aa10889949c6c2acff05fee02a13d..8487379db591c961fce3ef1e81c110f1
                      flag |= booleansupplier.getAsBoolean();
                  }
  
-@@ -197,11 +197,12 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -197,12 +197,12 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
  
      private static boolean hopperPush(final Level level, final Container destination, final Direction direction, final HopperBlockEntity hopper) {
          skipPushModeEventFire = skipHopperEvents;
@@ -367,13 +367,14 @@ index d76603c4172aa10889949c6c2acff05fee02a13d..8487379db591c961fce3ef1e81c110f1
 -            final ItemStack item = hopper.getItem(i);
 -            if (!item.isEmpty()) {
 -                foundItem = true;
+-                ItemStack origItemStack = item;
 +            if (hopper.items.hasStack(i)) {
-+                final ItemStack item = hopper.getItem(i);
++                ItemStack origItemStack = hopper.getItem(i);
 +                // HoloCons end
-                 ItemStack origItemStack = item;
                  ItemStack movedItem = origItemStack;
  
-@@ -408,12 +409,12 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+                 final int originalItemCount = origItemStack.getCount();
+@@ -408,12 +408,12 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
      }
  
      private static boolean isFullContainer(Container inventory, Direction direction) {
@@ -388,7 +389,7 @@ index d76603c4172aa10889949c6c2acff05fee02a13d..8487379db591c961fce3ef1e81c110f1
      }
      private static boolean allMatch(Container iinventory, Direction enumdirection, java.util.function.BiPredicate<ItemStack, Integer> test) {
          if (iinventory instanceof WorldlyContainer) {
-@@ -592,7 +593,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -592,7 +592,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
  
          if (HopperBlockEntity.canPlaceItemInContainer(to, stack, slot, side)) {
              boolean flag = false;
@@ -397,7 +398,7 @@ index d76603c4172aa10889949c6c2acff05fee02a13d..8487379db591c961fce3ef1e81c110f1
  
              if (itemstack1.isEmpty()) {
                  // Spigot start - SPIGOT-6693, InventorySubcontainer#setItem
-@@ -745,7 +746,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -745,7 +745,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
  
      @Override
      protected void setItems(NonNullList<ItemStack> list) {
@@ -406,7 +407,7 @@ index d76603c4172aa10889949c6c2acff05fee02a13d..8487379db591c961fce3ef1e81c110f1
      }
  
      public static void entityInside(Level world, BlockPos pos, BlockState state, Entity entity, HopperBlockEntity blockEntity) {
-@@ -761,4 +762,15 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -761,4 +761,15 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
      protected AbstractContainerMenu createMenu(int syncId, net.minecraft.world.entity.player.Inventory playerInventory) {
          return new HopperMenu(syncId, playerInventory, this);
      }
@@ -424,7 +425,7 @@ index d76603c4172aa10889949c6c2acff05fee02a13d..8487379db591c961fce3ef1e81c110f1
  }
 diff --git a/src/main/java/xyz/holocons/mc/ItemListWithBitSet.java b/src/main/java/xyz/holocons/mc/ItemListWithBitSet.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..d14aae42f934174c09f6089d820bb89e3c40f027
+index 0000000000000000000000000000000000000000..62d4e0e3759d1b0e64473d336f10101758b771b5
 --- /dev/null
 +++ b/src/main/java/xyz/holocons/mc/ItemListWithBitSet.java
 @@ -0,0 +1,93 @@
@@ -466,7 +467,7 @@ index 0000000000000000000000000000000000000000..d14aae42f934174c09f6089d820bb89e
 +
 +    private ItemListWithBitSet(ItemStack[] array) {
 +        super(Arrays.asList(array), ItemStack.EMPTY);
-+        Validate.isTrue(array.length < Long.BYTES * 8, "size is too large");
++        Validate.isTrue(array.length < Long.BYTES * 8, "Size is too large");
 +        this.allBits = (1L << array.length) - 1;
 +        this.bitSet = 0L;
 +    }

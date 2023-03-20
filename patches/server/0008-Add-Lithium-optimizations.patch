@@ -1,0 +1,237 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Derek Lee <derek.scott.lee13@gmail.com>
+Date: Sat, 18 Mar 2023 18:54:57 -0700
+Subject: [PATCH] Add Lithium optimizations
+
+
+diff --git a/src/main/java/net/minecraft/core/AxisCycle.java b/src/main/java/net/minecraft/core/AxisCycle.java
+index b5d8a60dc78a76c0a55bfc30cc49d26857bd914a..e181a36f77dd27912faf0b3c00ec49b79dce19d5 100644
+--- a/src/main/java/net/minecraft/core/AxisCycle.java
++++ b/src/main/java/net/minecraft/core/AxisCycle.java
+@@ -35,7 +35,13 @@ public enum AxisCycle {
+ 
+         @Override
+         public Direction.Axis cycle(Direction.Axis axis) {
+-            return AXIS_VALUES[Math.floorMod(axis.ordinal() + 1, 3)];
++            // Lithium start - avoid modulo/array operations
++            return switch (axis) {
++                case X -> Direction.Axis.Y;
++                case Y -> Direction.Axis.Z;
++                case Z -> Direction.Axis.X;
++            };
++            // Lithium end
+         }
+ 
+         @Override
+@@ -56,7 +62,13 @@ public enum AxisCycle {
+ 
+         @Override
+         public Direction.Axis cycle(Direction.Axis axis) {
+-            return AXIS_VALUES[Math.floorMod(axis.ordinal() - 1, 3)];
++            // Lithium start - avoid modulo/array operations
++            return switch (axis) {
++                case X -> Direction.Axis.Z;
++                case Y -> Direction.Axis.X;
++                case Z -> Direction.Axis.Y;
++            };
++            // Lithium end
+         }
+ 
+         @Override
+diff --git a/src/main/java/net/minecraft/core/Direction.java b/src/main/java/net/minecraft/core/Direction.java
+index c1172ba542bc07e0c780a50d5b4ce26ac04c1720..63397097470def86031a4ebfc4dda8a9dc28349e 100644
+--- a/src/main/java/net/minecraft/core/Direction.java
++++ b/src/main/java/net/minecraft/core/Direction.java
+@@ -191,7 +191,7 @@ public enum Direction implements StringRepresentable {
+     }
+ 
+     public Direction getOpposite() {
+-        return from3DDataValue(this.oppositeIndex);
++        return VALUES[this.oppositeIndex]; // Lithium - avoid modulo/abs operations
+     }
+ 
+     public Direction getClockWise(Direction.Axis axis) {
+diff --git a/src/main/java/net/minecraft/util/ClassInstanceMultiMap.java b/src/main/java/net/minecraft/util/ClassInstanceMultiMap.java
+index 50a9f33aa31e9273c7c52d4bb2b02f0f884f7ba5..111a6054fe60313dcc5d5122094b6c3f5fe27e06 100644
+--- a/src/main/java/net/minecraft/util/ClassInstanceMultiMap.java
++++ b/src/main/java/net/minecraft/util/ClassInstanceMultiMap.java
+@@ -13,7 +13,7 @@ import java.util.Map;
+ import java.util.stream.Collectors;
+ 
+ public class ClassInstanceMultiMap<T> extends AbstractCollection<T> {
+-    private final Map<Class<?>, List<T>> byClass = Maps.newHashMap();
++    private final Map<Class<?>, List<T>> byClass = new it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap<>(); // Lithium - use faster collection
+     private final Class<T> baseClass;
+     private final List<T> allInstances = Lists.newArrayList();
+ 
+@@ -55,15 +55,24 @@ public class ClassInstanceMultiMap<T> extends AbstractCollection<T> {
+     }
+ 
+     public <S> Collection<S> find(Class<S> type) {
+-        if (!this.baseClass.isAssignableFrom(type)) {
+-            throw new IllegalArgumentException("Don't know how to search for " + type);
+-        } else {
+-            List<? extends T> list = this.byClass.computeIfAbsent(type, (typeClass) -> {
+-                return this.allInstances.stream().filter(typeClass::isInstance).collect(Collectors.toList());
+-            });
+-            return Collections.unmodifiableCollection(list);
++        // Lithium start - improve performance when entities are being queried in the world
++        Collection<T> collection = this.byClass.get(type);
++        if (collection == null) {
++            collection = this.create(type);
+         }
++        return (Collection<S>) Collections.unmodifiableCollection(collection);
+     }
++    private <S> Collection<T> create(Class<S> type) {
++        final List<T> list = new java.util.ArrayList<>();
++        for (T element : this.allInstances) {
++            if (type.isInstance(element)) {
++                list.add(element);
++            }
++        }
++        this.byClass.put(type, list);
++        return list;
++    }
++    // Lithium end
+ 
+     @Override
+     public Iterator<T> iterator() {
+diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
+index f9217128a07d768069f1781b9e6802d785500ee7..08f0527b9a6773016f108c9c30e85c7f5fd4788c 100644
+--- a/src/main/java/net/minecraft/world/entity/Entity.java
++++ b/src/main/java/net/minecraft/world/entity/Entity.java
+@@ -552,7 +552,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+         this.random = SHARED_RANDOM; // Paper
+         this.remainingFireTicks = -this.getFireImmuneTicks();
+         this.fluidHeight = new Object2DoubleArrayMap(2);
+-        this.fluidOnEyes = new HashSet();
++        this.fluidOnEyes = new it.unimi.dsi.fastutil.objects.ReferenceArraySet<>(); // Lithium - use faster collection
+         this.firstTick = true;
+         this.levelCallback = EntityInLevelCallback.NULL;
+         this.packetPositionCodec = new VecDeltaCodec();
+@@ -1734,7 +1734,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+ 
+     private void updateFluidOnEyes() {
+         this.wasEyeInWater = this.isEyeInFluid(FluidTags.WATER);
+-        this.fluidOnEyes.clear();
++        if (!this.fluidOnEyes.isEmpty()) this.fluidOnEyes.clear(); // Lithium - use faster collection
+         double d0 = this.getEyeY() - 0.1111111119389534D;
+         Entity entity = this.getVehicle();
+ 
+diff --git a/src/main/java/net/minecraft/world/entity/ai/attributes/AttributeMap.java b/src/main/java/net/minecraft/world/entity/ai/attributes/AttributeMap.java
+index dd1102d5291ef6f18e82400a6d8a0a376cc071e9..3d7f84b8b50e34d619993adafac4b1399a4e2399 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/attributes/AttributeMap.java
++++ b/src/main/java/net/minecraft/world/entity/ai/attributes/AttributeMap.java
+@@ -20,8 +20,8 @@ import org.slf4j.Logger;
+ 
+ public class AttributeMap {
+     private static final Logger LOGGER = LogUtils.getLogger();
+-    private final Map<Attribute, AttributeInstance> attributes = Maps.newHashMap();
+-    private final Set<AttributeInstance> dirtyAttributes = Sets.newHashSet();
++    private final Map<Attribute, AttributeInstance> attributes = new it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap<>(); // Lithium - use faster collection
++    private final Set<AttributeInstance> dirtyAttributes = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>(); // Lithium - use faster collection
+     private final AttributeSupplier supplier;
+ 
+     public AttributeMap(AttributeSupplier defaultAttributes) {
+diff --git a/src/main/java/net/minecraft/world/entity/ai/goal/GoalSelector.java b/src/main/java/net/minecraft/world/entity/ai/goal/GoalSelector.java
+index 6d6cdb8e3f627c6e7ee291d9bceb0754088a4c8f..3077cfc9d106a7208a3ecd037a99d3458b6e0b14 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/goal/GoalSelector.java
++++ b/src/main/java/net/minecraft/world/entity/ai/goal/GoalSelector.java
+@@ -28,7 +28,7 @@ public class GoalSelector {
+         }
+     };
+     private final Map<Goal.Flag, WrappedGoal> lockedFlags = new EnumMap<>(Goal.Flag.class);
+-    private final Set<WrappedGoal> availableGoals = Sets.newLinkedHashSet();
++    private final Set<WrappedGoal> availableGoals = new it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet<>(); // Lithium - use faster collection
+     private final Supplier<ProfilerFiller> profiler;
+     private final EnumSet<Goal.Flag> disabledFlags = EnumSet.noneOf(Goal.Flag.class); // Paper unused, but dummy to prevent plugins from crashing as hard. Theyll need to support paper in a special case if this is super important, but really doesn't seem like it would be.
+     private final com.destroystokyo.paper.util.set.OptimizedSmallEnumSet<net.minecraft.world.entity.ai.goal.Goal.Flag> goalTypes = new com.destroystokyo.paper.util.set.OptimizedSmallEnumSet<>(Goal.Flag.class); // Paper - remove streams from pathfindergoalselector
+diff --git a/src/main/java/net/minecraft/world/level/GameRules.java b/src/main/java/net/minecraft/world/level/GameRules.java
+index 663c1d8c1611af915a1bae733920dd75ad73feb1..d87a282d14d1f049ab0347945a25a5388f99ab5b 100644
+--- a/src/main/java/net/minecraft/world/level/GameRules.java
++++ b/src/main/java/net/minecraft/world/level/GameRules.java
+@@ -116,13 +116,14 @@ public class GameRules {
+     }
+ 
+     public GameRules() {
+-        this.rules = (Map) GameRules.GAME_RULE_TYPES.entrySet().stream().collect(ImmutableMap.toImmutableMap(Entry::getKey, (entry) -> {
+-            return ((GameRules.Type) entry.getValue()).createRule();
+-        }));
++        // Lithium start - use faster collection
++        this.rules = new it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap<>(GameRules.GAME_RULE_TYPES.size());
++        GameRules.GAME_RULE_TYPES.forEach((key, type) -> this.rules.put(key, type.createRule()));
++        // Lithium end
+     }
+ 
+     private GameRules(Map<GameRules.Key<?>, GameRules.Value<?>> rules) {
+-        this.rules = rules;
++        this.rules = new it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap<>(rules); // Lithium - use faster collection
+     }
+ 
+     public <T extends GameRules.Value<T>> T getRule(GameRules.Key<T> key) {
+diff --git a/src/main/java/net/minecraft/world/level/biome/MobSpawnSettings.java b/src/main/java/net/minecraft/world/level/biome/MobSpawnSettings.java
+index 04c35af0431654c2a5c54113f257a0e0a42bff4f..7288dcbad9f84c9ef45c23a7302f8b417ef76b00 100644
+--- a/src/main/java/net/minecraft/world/level/biome/MobSpawnSettings.java
++++ b/src/main/java/net/minecraft/world/level/biome/MobSpawnSettings.java
+@@ -41,7 +41,7 @@ public class MobSpawnSettings {
+ 
+     MobSpawnSettings(float creatureSpawnProbability, Map<MobCategory, WeightedRandomList<MobSpawnSettings.SpawnerData>> spawners, Map<EntityType<?>, MobSpawnSettings.MobSpawnCost> spawnCosts) {
+         this.creatureGenerationProbability = creatureSpawnProbability;
+-        this.spawners = ImmutableMap.copyOf(spawners);
++        this.spawners = Maps.newEnumMap(spawners); // Lithium - use faster collection
+         this.mobSpawnCosts = ImmutableMap.copyOf(spawnCosts);
+     }
+ 
+diff --git a/src/main/java/net/minecraft/world/level/block/ComposterBlock.java b/src/main/java/net/minecraft/world/level/block/ComposterBlock.java
+index f6268231e39f50bb6adedd85e3c18d746ae3792d..4faa9ae47c6a89d1849519e1171ded4200a9ddfd 100644
+--- a/src/main/java/net/minecraft/world/level/block/ComposterBlock.java
++++ b/src/main/java/net/minecraft/world/level/block/ComposterBlock.java
+@@ -417,7 +417,7 @@ public class ComposterBlock extends Block implements WorldlyContainerHolder {
+ 
+         @Override
+         public int[] getSlotsForFace(Direction side) {
+-            return side == Direction.DOWN ? new int[]{0} : new int[0];
++            return side == Direction.DOWN ? SLOTS_FOR_SINGLE_SLOT : SLOTS_FOR_EMPTY; // Lithium - avoid allocations
+         }
+ 
+         @Override
+@@ -466,7 +466,7 @@ public class ComposterBlock extends Block implements WorldlyContainerHolder {
+ 
+         @Override
+         public int[] getSlotsForFace(Direction side) {
+-            return side == Direction.UP ? new int[]{0} : new int[0];
++            return side == Direction.UP ? SLOTS_FOR_SINGLE_SLOT : SLOTS_FOR_EMPTY; // Lithium - avoid allocations
+         }
+ 
+         @Override
+@@ -508,7 +508,7 @@ public class ComposterBlock extends Block implements WorldlyContainerHolder {
+ 
+         @Override
+         public int[] getSlotsForFace(Direction side) {
+-            return new int[0];
++            return SLOTS_FOR_EMPTY; // Lithium - avoid allocations
+         }
+ 
+         @Override
+@@ -521,4 +521,8 @@ public class ComposterBlock extends Block implements WorldlyContainerHolder {
+             return false;
+         }
+     }
++    // Lithium start - avoid allocations
++    private static final int[] SLOTS_FOR_SINGLE_SLOT = new int[] { 0 };
++    private static final int[] SLOTS_FOR_EMPTY = new int[0];
++    // Lithium end
+ }
+diff --git a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
+index 5810aae8aac9c368b2e22ee2bc0e081b1f91be6e..ca19e74a01a59d27e354adc06e1fca5b06497b1a 100644
+--- a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
++++ b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
+@@ -98,7 +98,7 @@ public class LevelChunk extends ChunkAccess {
+         this.setBlockNibbles(ca.spottedleaf.starlight.common.light.StarLightEngine.getFilledEmptyLight(world));
+         this.setSkyNibbles(ca.spottedleaf.starlight.common.light.StarLightEngine.getFilledEmptyLight(world));
+         // Paper end - rewrite light engine
+-        this.tickersInLevel = Maps.newHashMap();
++        this.tickersInLevel = new it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap<>(); // Lithium - use faster collection
+         this.clientLightReady = false;
+         this.level = (ServerLevel) world; // CraftBukkit - type
+         this.gameEventListenerRegistrySections = new Int2ObjectOpenHashMap();
