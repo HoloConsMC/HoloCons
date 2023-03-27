@@ -25,7 +25,7 @@ index 241fec02e6869c638d3a160819b32173a081467b..a94617e20a05baac90ec22e74f39c1fa
 +    // HoloCons end
  }
 diff --git a/src/main/java/net/minecraft/world/Container.java b/src/main/java/net/minecraft/world/Container.java
-index 540bc9500c35c0db719b00aa26f6fb3a1b08ed9f..33b077706d6758f3e73211218348992f6e90a649 100644
+index 540bc9500c35c0db719b00aa26f6fb3a1b08ed9f..ce2bbb246a89667c7bea19af67190a6d0b23be0a 100644
 --- a/src/main/java/net/minecraft/world/Container.java
 +++ b/src/main/java/net/minecraft/world/Container.java
 @@ -95,4 +95,26 @@ public interface Container extends Clearable {
@@ -37,7 +37,7 @@ index 540bc9500c35c0db719b00aa26f6fb3a1b08ed9f..33b077706d6758f3e73211218348992f
 +        final int size = this.getContainerSize();
 +        for (int i = 0; i < size; i++) {
 +            final ItemStack itemStack = this.getItem(i);
-+            if (itemStack.getCount() <= 0 || itemStack.getCount() < itemStack.getMaxStackSize()) {
++            if (itemStack.getCount() < itemStack.getMaxStackSize()) {
 +                return false;
 +            }
 +        }
