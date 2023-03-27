@@ -258,7 +258,7 @@ index a71414397bd45ee7bcacfeef0041d80dfa25f114..b1ddede3b093cddab19c672ad28f763d
 +    // HoloCons end
  }
 diff --git a/src/main/java/net/minecraft/world/level/block/entity/DispenserBlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/DispenserBlockEntity.java
-index 881379681c39230a00b3a1f11cd87498984396c7..e6fe1815f7b628f937c5b117cb5a0f1ae4fc5800 100644
+index 881379681c39230a00b3a1f11cd87498984396c7..c7d029ec34650f98ec66a42c73b4e181243b03dd 100644
 --- a/src/main/java/net/minecraft/world/level/block/entity/DispenserBlockEntity.java
 +++ b/src/main/java/net/minecraft/world/level/block/entity/DispenserBlockEntity.java
 @@ -21,7 +21,7 @@ import org.bukkit.entity.HumanEntity;
@@ -279,6 +279,24 @@ index 881379681c39230a00b3a1f11cd87498984396c7..e6fe1815f7b628f937c5b117cb5a0f1a
      }
  
      public DispenserBlockEntity(BlockPos pos, BlockState state) {
+@@ -73,7 +73,7 @@ public class DispenserBlockEntity extends RandomizableContainerBlockEntity {
+         int j = 1;
+ 
+         for (int k = 0; k < this.items.size(); ++k) {
+-            if (!((ItemStack) this.items.get(k)).isEmpty() && random.nextInt(j++) == 0) {
++            if (this.items.hasStack(k) && random.nextInt(j++) == 0) {
+                 i = k;
+             }
+         }
+@@ -83,7 +83,7 @@ public class DispenserBlockEntity extends RandomizableContainerBlockEntity {
+ 
+     public int addItem(ItemStack stack) {
+         for (int i = 0; i < this.items.size(); ++i) {
+-            if (((ItemStack) this.items.get(i)).isEmpty()) {
++            if (!this.items.hasStack(i)) {
+                 this.setItem(i, stack);
+                 return i;
+             }
 @@ -100,7 +100,7 @@ public class DispenserBlockEntity extends RandomizableContainerBlockEntity {
      @Override
      public void load(CompoundTag nbt) {
