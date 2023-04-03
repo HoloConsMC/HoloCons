@@ -425,10 +425,10 @@ index d76603c4172aa10889949c6c2acff05fee02a13d..19e5a570d6b2ffa3176024c9c6036636
  }
 diff --git a/src/main/java/xyz/holocons/mc/ItemListWithBitSet.java b/src/main/java/xyz/holocons/mc/ItemListWithBitSet.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..74b4a3f485379e8c9092771c2ec5bc47e2016d87
+index 0000000000000000000000000000000000000000..de6b251a090c699421b0e613b1012cb1600b5898
 --- /dev/null
 +++ b/src/main/java/xyz/holocons/mc/ItemListWithBitSet.java
-@@ -0,0 +1,93 @@
+@@ -0,0 +1,97 @@
 +package xyz.holocons.mc;
 +
 +import java.util.Arrays;
@@ -499,10 +499,14 @@ index 0000000000000000000000000000000000000000..74b4a3f485379e8c9092771c2ec5bc47
 +        return ItemListWithBitSet.testBitMask(this.bitSet, 1L << index);
 +    }
 +
++    private static long heavisideStep(long i) {
++        return -i >>> (Long.SIZE - 1);
++    }
++
 +    @Nonnull
 +    @Override
 +    public ItemStack set(int index, @Nonnull ItemStack itemStack) {
-+        this.bitSet = itemStack.isEmpty() ? bitSet & ~(1L << index) : bitSet | (1L << index);
++        this.bitSet = (bitSet & ~(1L << index)) | (ItemListWithBitSet.heavisideStep((long) itemStack.getCount()) << index);
 +        return super.set(index, itemStack);
 +    }
 +
