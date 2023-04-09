@@ -1,0 +1,37 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Derek Lee <derek.scott.lee13@gmail.com>
+Date: Thu, 30 Mar 2023 21:39:57 -0700
+Subject: [PATCH] Add custom registries
+
+
+diff --git a/src/main/java/net/minecraft/server/Bootstrap.java b/src/main/java/net/minecraft/server/Bootstrap.java
+index a1192d1f6b99669f843e8d9a8928ff0e8c030559..82cd74fb4e9e929d7a7289a1ede0da9837f20957 100644
+--- a/src/main/java/net/minecraft/server/Bootstrap.java
++++ b/src/main/java/net/minecraft/server/Bootstrap.java
+@@ -73,6 +73,7 @@ public class Bootstrap {
+                     BuiltInRegistries.bootStrap(() -> {
+                         net.minecraft.core.Registry.register(net.minecraft.core.registries.BuiltInRegistries.MATERIAL_CONDITION, new net.minecraft.resources.ResourceLocation("paper", "bedrock_condition_source"), net.minecraft.data.worldgen.SurfaceRuleData.PaperBedrockConditionSource.CODEC.codec());
+                         io.papermc.paper.plugin.entrypoint.LaunchEntryPointHandler.enterBootstrappers(); // Paper - Entrypoint for bootstrapping
++                        xyz.holocons.mc.HoloConsRegistries.bootStrap(Bootstrap.LOGGER); // HoloCons - add custom registries
+                     });
+                     // Paper end
+                     Bootstrap.wrapStreams();
+diff --git a/src/main/java/xyz/holocons/mc/HoloConsRegistries.java b/src/main/java/xyz/holocons/mc/HoloConsRegistries.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..690788f8adde4128c29b093bc3df0fceccefeccf
+--- /dev/null
++++ b/src/main/java/xyz/holocons/mc/HoloConsRegistries.java
+@@ -0,0 +1,13 @@
++package xyz.holocons.mc;
++
++import org.slf4j.Logger;
++
++public final class HoloConsRegistries {
++
++    private HoloConsRegistries() {
++    }
++
++    public static void bootStrap(final Logger logger) {
++        logger.info("Running HoloCons bootstrap");
++    }
++}

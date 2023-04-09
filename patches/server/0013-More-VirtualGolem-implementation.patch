@@ -1,0 +1,105 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Derek Lee <derek.scott.lee13@gmail.com>
+Date: Sat, 8 Apr 2023 07:19:31 -0700
+Subject: [PATCH] More VirtualGolem implementation
+
+
+diff --git a/src/main/java/net/minecraft/world/entity/ai/attributes/DefaultAttributes.java b/src/main/java/net/minecraft/world/entity/ai/attributes/DefaultAttributes.java
+index 3f7c6349a99c1cd4e0b2d7fc7a43bedcf5a9d980..9e4a2da3a7391147bd108fcc3e6afa8c5f6c56c2 100644
+--- a/src/main/java/net/minecraft/world/entity/ai/attributes/DefaultAttributes.java
++++ b/src/main/java/net/minecraft/world/entity/ai/attributes/DefaultAttributes.java
+@@ -79,7 +79,7 @@ import org.slf4j.Logger;
+ 
+ public class DefaultAttributes {
+     private static final Logger LOGGER = LogUtils.getLogger();
+-    private static final Map<EntityType<? extends LivingEntity>, AttributeSupplier> SUPPLIERS = ImmutableMap.<EntityType<? extends LivingEntity>, AttributeSupplier>builder().put(EntityType.ALLAY, Allay.createAttributes().build()).put(EntityType.ARMOR_STAND, LivingEntity.createLivingAttributes().build()).put(EntityType.AXOLOTL, Axolotl.createAttributes().build()).put(EntityType.BAT, Bat.createAttributes().build()).put(EntityType.BEE, Bee.createAttributes().build()).put(EntityType.BLAZE, Blaze.createAttributes().build()).put(EntityType.CAT, Cat.createAttributes().build()).put(EntityType.CAMEL, Camel.createAttributes().build()).put(EntityType.CAVE_SPIDER, CaveSpider.createCaveSpider().build()).put(EntityType.CHICKEN, Chicken.createAttributes().build()).put(EntityType.COD, AbstractFish.createAttributes().build()).put(EntityType.COW, Cow.createAttributes().build()).put(EntityType.CREEPER, Creeper.createAttributes().build()).put(EntityType.DOLPHIN, Dolphin.createAttributes().build()).put(EntityType.DONKEY, AbstractChestedHorse.createBaseChestedHorseAttributes().build()).put(EntityType.DROWNED, Zombie.createAttributes().build()).put(EntityType.ELDER_GUARDIAN, ElderGuardian.createAttributes().build()).put(EntityType.ENDERMAN, EnderMan.createAttributes().build()).put(EntityType.ENDERMITE, Endermite.createAttributes().build()).put(EntityType.ENDER_DRAGON, EnderDragon.createAttributes().build()).put(EntityType.EVOKER, Evoker.createAttributes().build()).put(EntityType.FOX, Fox.createAttributes().build()).put(EntityType.FROG, Frog.createAttributes().build()).put(EntityType.GHAST, Ghast.createAttributes().build()).put(EntityType.GIANT, Giant.createAttributes().build()).put(EntityType.GLOW_SQUID, GlowSquid.createAttributes().build()).put(EntityType.GOAT, Goat.createAttributes().build()).put(EntityType.GUARDIAN, Guardian.createAttributes().build()).put(EntityType.HOGLIN, Hoglin.createAttributes().build()).put(EntityType.HORSE, AbstractHorse.createBaseHorseAttributes().build()).put(EntityType.HUSK, Zombie.createAttributes().build()).put(EntityType.ILLUSIONER, Illusioner.createAttributes().build()).put(EntityType.IRON_GOLEM, IronGolem.createAttributes().build()).put(EntityType.LLAMA, Llama.createAttributes().build()).put(EntityType.MAGMA_CUBE, MagmaCube.createAttributes().build()).put(EntityType.MOOSHROOM, Cow.createAttributes().build()).put(EntityType.MULE, AbstractChestedHorse.createBaseChestedHorseAttributes().build()).put(EntityType.OCELOT, Ocelot.createAttributes().build()).put(EntityType.PANDA, Panda.createAttributes().build()).put(EntityType.PARROT, Parrot.createAttributes().build()).put(EntityType.PHANTOM, Monster.createMonsterAttributes().build()).put(EntityType.PIG, Pig.createAttributes().build()).put(EntityType.PIGLIN, Piglin.createAttributes().build()).put(EntityType.PIGLIN_BRUTE, PiglinBrute.createAttributes().build()).put(EntityType.PILLAGER, Pillager.createAttributes().build()).put(EntityType.PLAYER, Player.createAttributes().build()).put(EntityType.POLAR_BEAR, PolarBear.createAttributes().build()).put(EntityType.PUFFERFISH, AbstractFish.createAttributes().build()).put(EntityType.RABBIT, Rabbit.createAttributes().build()).put(EntityType.RAVAGER, Ravager.createAttributes().build()).put(EntityType.SALMON, AbstractFish.createAttributes().build()).put(EntityType.SHEEP, Sheep.createAttributes().build()).put(EntityType.SHULKER, Shulker.createAttributes().build()).put(EntityType.SILVERFISH, Silverfish.createAttributes().build()).put(EntityType.SKELETON, AbstractSkeleton.createAttributes().build()).put(EntityType.SKELETON_HORSE, SkeletonHorse.createAttributes().build()).put(EntityType.SLIME, Monster.createMonsterAttributes().build()).put(EntityType.SNOW_GOLEM, SnowGolem.createAttributes().build()).put(EntityType.SPIDER, Spider.createAttributes().build()).put(EntityType.SQUID, Squid.createAttributes().build()).put(EntityType.STRAY, AbstractSkeleton.createAttributes().build()).put(EntityType.STRIDER, Strider.createAttributes().build()).put(EntityType.TADPOLE, Tadpole.createAttributes().build()).put(EntityType.TRADER_LLAMA, Llama.createAttributes().build()).put(EntityType.TROPICAL_FISH, AbstractFish.createAttributes().build()).put(EntityType.TURTLE, Turtle.createAttributes().build()).put(EntityType.VEX, Vex.createAttributes().build()).put(EntityType.VILLAGER, Villager.createAttributes().build()).put(EntityType.VINDICATOR, Vindicator.createAttributes().build()).put(EntityType.WARDEN, Warden.createAttributes().build()).put(EntityType.WANDERING_TRADER, Mob.createMobAttributes().build()).put(EntityType.WITCH, Witch.createAttributes().build()).put(EntityType.WITHER, WitherBoss.createAttributes().build()).put(EntityType.WITHER_SKELETON, AbstractSkeleton.createAttributes().build()).put(EntityType.WOLF, Wolf.createAttributes().build()).put(EntityType.ZOGLIN, Zoglin.createAttributes().build()).put(EntityType.ZOMBIE, Zombie.createAttributes().build()).put(EntityType.ZOMBIE_HORSE, ZombieHorse.createAttributes().build()).put(EntityType.ZOMBIE_VILLAGER, Zombie.createAttributes().build()).put(EntityType.ZOMBIFIED_PIGLIN, ZombifiedPiglin.createAttributes().build()).build();
++    private static final Map<EntityType<? extends LivingEntity>, AttributeSupplier> SUPPLIERS = ImmutableMap.<EntityType<? extends LivingEntity>, AttributeSupplier>builder().put(EntityType.ALLAY, Allay.createAttributes().build()).put(EntityType.ARMOR_STAND, LivingEntity.createLivingAttributes().build()).put(EntityType.AXOLOTL, Axolotl.createAttributes().build()).put(EntityType.BAT, Bat.createAttributes().build()).put(EntityType.BEE, Bee.createAttributes().build()).put(EntityType.BLAZE, Blaze.createAttributes().build()).put(EntityType.CAT, Cat.createAttributes().build()).put(EntityType.CAMEL, Camel.createAttributes().build()).put(EntityType.CAVE_SPIDER, CaveSpider.createCaveSpider().build()).put(EntityType.CHICKEN, Chicken.createAttributes().build()).put(EntityType.COD, AbstractFish.createAttributes().build()).put(EntityType.COW, Cow.createAttributes().build()).put(EntityType.CREEPER, Creeper.createAttributes().build()).put(EntityType.DOLPHIN, Dolphin.createAttributes().build()).put(EntityType.DONKEY, AbstractChestedHorse.createBaseChestedHorseAttributes().build()).put(EntityType.DROWNED, Zombie.createAttributes().build()).put(EntityType.ELDER_GUARDIAN, ElderGuardian.createAttributes().build()).put(EntityType.ENDERMAN, EnderMan.createAttributes().build()).put(EntityType.ENDERMITE, Endermite.createAttributes().build()).put(EntityType.ENDER_DRAGON, EnderDragon.createAttributes().build()).put(EntityType.EVOKER, Evoker.createAttributes().build()).put(EntityType.FOX, Fox.createAttributes().build()).put(EntityType.FROG, Frog.createAttributes().build()).put(EntityType.GHAST, Ghast.createAttributes().build()).put(EntityType.GIANT, Giant.createAttributes().build()).put(EntityType.GLOW_SQUID, GlowSquid.createAttributes().build()).put(EntityType.GOAT, Goat.createAttributes().build()).put(EntityType.GUARDIAN, Guardian.createAttributes().build()).put(EntityType.HOGLIN, Hoglin.createAttributes().build()).put(EntityType.HORSE, AbstractHorse.createBaseHorseAttributes().build()).put(EntityType.HUSK, Zombie.createAttributes().build()).put(EntityType.ILLUSIONER, Illusioner.createAttributes().build()).put(EntityType.IRON_GOLEM, IronGolem.createAttributes().build()).put(EntityType.LLAMA, Llama.createAttributes().build()).put(EntityType.MAGMA_CUBE, MagmaCube.createAttributes().build()).put(EntityType.MOOSHROOM, Cow.createAttributes().build()).put(EntityType.MULE, AbstractChestedHorse.createBaseChestedHorseAttributes().build()).put(EntityType.OCELOT, Ocelot.createAttributes().build()).put(EntityType.PANDA, Panda.createAttributes().build()).put(EntityType.PARROT, Parrot.createAttributes().build()).put(EntityType.PHANTOM, Monster.createMonsterAttributes().build()).put(EntityType.PIG, Pig.createAttributes().build()).put(EntityType.PIGLIN, Piglin.createAttributes().build()).put(EntityType.PIGLIN_BRUTE, PiglinBrute.createAttributes().build()).put(EntityType.PILLAGER, Pillager.createAttributes().build()).put(EntityType.PLAYER, Player.createAttributes().build()).put(EntityType.POLAR_BEAR, PolarBear.createAttributes().build()).put(EntityType.PUFFERFISH, AbstractFish.createAttributes().build()).put(EntityType.RABBIT, Rabbit.createAttributes().build()).put(EntityType.RAVAGER, Ravager.createAttributes().build()).put(EntityType.SALMON, AbstractFish.createAttributes().build()).put(EntityType.SHEEP, Sheep.createAttributes().build()).put(EntityType.SHULKER, Shulker.createAttributes().build()).put(EntityType.SILVERFISH, Silverfish.createAttributes().build()).put(EntityType.SKELETON, AbstractSkeleton.createAttributes().build()).put(EntityType.SKELETON_HORSE, SkeletonHorse.createAttributes().build()).put(EntityType.SLIME, Monster.createMonsterAttributes().build()).put(EntityType.SNOW_GOLEM, SnowGolem.createAttributes().build()).put(EntityType.SPIDER, Spider.createAttributes().build()).put(EntityType.SQUID, Squid.createAttributes().build()).put(EntityType.STRAY, AbstractSkeleton.createAttributes().build()).put(EntityType.STRIDER, Strider.createAttributes().build()).put(EntityType.TADPOLE, Tadpole.createAttributes().build()).put(EntityType.TRADER_LLAMA, Llama.createAttributes().build()).put(EntityType.TROPICAL_FISH, AbstractFish.createAttributes().build()).put(EntityType.TURTLE, Turtle.createAttributes().build()).put(EntityType.VEX, Vex.createAttributes().build()).put(EntityType.VILLAGER, Villager.createAttributes().build()).put(EntityType.VINDICATOR, Vindicator.createAttributes().build()).put(EntityType.WARDEN, Warden.createAttributes().build()).put(EntityType.WANDERING_TRADER, Mob.createMobAttributes().build()).put(EntityType.WITCH, Witch.createAttributes().build()).put(EntityType.WITHER, WitherBoss.createAttributes().build()).put(EntityType.WITHER_SKELETON, AbstractSkeleton.createAttributes().build()).put(EntityType.WOLF, Wolf.createAttributes().build()).put(EntityType.ZOGLIN, Zoglin.createAttributes().build()).put(EntityType.ZOMBIE, Zombie.createAttributes().build()).put(EntityType.ZOMBIE_HORSE, ZombieHorse.createAttributes().build()).put(EntityType.ZOMBIE_VILLAGER, Zombie.createAttributes().build()).put(EntityType.ZOMBIFIED_PIGLIN, ZombifiedPiglin.createAttributes().build()).putAll(xyz.holocons.mc.HoloConsRegistries.EntityTypes.getAttributeSuppliers()).build(); // HoloCons - add VirtualGolem mob
+ 
+     public static AttributeSupplier getSupplier(EntityType<? extends LivingEntity> type) {
+         return SUPPLIERS.get(type);
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
+index 750ac80eed6ba03e138dd4c03f57ddfe4a123276..f56a349866e83f812f5e77ea05a8fea23d343ce0 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
+@@ -427,6 +427,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+         else if (entity instanceof EvokerFangs) { return new CraftEvokerFangs(server, (EvokerFangs) entity); }
+         else if (entity instanceof LlamaSpit) { return new CraftLlamaSpit(server, (LlamaSpit) entity); }
+         else if (entity instanceof Marker) { return new CraftMarker(server, (Marker) entity); }
++        if (entity instanceof xyz.holocons.mc.entity.HoloConsEntity holoConsEntity) { return holoConsEntity.createBukkitEntity(server); }; // HoloCons - add VirtualGolem mob
+         // CHECKSTYLE:ON
+ 
+         throw new AssertionError("Unknown entity " + (entity == null ? null : entity.getClass()));
+diff --git a/src/main/java/xyz/holocons/mc/HoloConsRegistries.java b/src/main/java/xyz/holocons/mc/HoloConsRegistries.java
+index 056a36f4960201ec36fda91b3ee2f00ec6ac10c7..57ca4a24879acde535ca8efb053e577dff0b60de 100644
+--- a/src/main/java/xyz/holocons/mc/HoloConsRegistries.java
++++ b/src/main/java/xyz/holocons/mc/HoloConsRegistries.java
+@@ -1,6 +1,6 @@
+ package xyz.holocons.mc;
+ 
+-import java.util.StringJoiner;
++import java.util.Map;
+ 
+ import org.slf4j.Logger;
+ 
+@@ -11,7 +11,9 @@ import net.minecraft.core.registries.BuiltInRegistries;
+ import net.minecraft.world.entity.Entity;
+ import net.minecraft.world.entity.EntityDimensions;
+ import net.minecraft.world.entity.EntityType;
++import net.minecraft.world.entity.LivingEntity;
+ import net.minecraft.world.entity.MobCategory;
++import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+ import net.minecraft.world.flag.FeatureFlags;
+ import xyz.holocons.mc.entity.VirtualGolem;
+ 
+@@ -43,5 +45,9 @@ public final class HoloConsRegistries {
+         //public static final EntityType<VirtualGolem> VIRTUAL_GOLEM = EntityTypes.register("virtual_golem", EntityType.Builder.of(VirtualGolem::new, MobCategory.MISC).noSave().noSummon().sized(0.6F, 1.8F).clientTrackingRange(32).updateInterval(2));
+         //TODO: make not summonable
+         public static final EntityType<VirtualGolem> VIRTUAL_GOLEM = EntityTypes.register("virtual_golem", VirtualGolem::new, MobCategory.MISC, false, true, false, true, EntityDimensions.scalable(0.6F, 1.8F), 32, 2);
++
++        public static Map<EntityType<? extends LivingEntity>, AttributeSupplier> getAttributeSuppliers() {
++            return Map.of(VIRTUAL_GOLEM, VirtualGolem.createAttributes().build());
++        }
+     }
+ }
+diff --git a/src/main/java/xyz/holocons/mc/entity/HoloConsEntity.java b/src/main/java/xyz/holocons/mc/entity/HoloConsEntity.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..e38fc0249f7d15ccb58168f1800d7c49f458be14
+--- /dev/null
++++ b/src/main/java/xyz/holocons/mc/entity/HoloConsEntity.java
+@@ -0,0 +1,9 @@
++package xyz.holocons.mc.entity;
++
++import org.bukkit.craftbukkit.entity.CraftEntity;
++import org.bukkit.craftbukkit.CraftServer;
++
++public interface HoloConsEntity {
++
++    CraftEntity createBukkitEntity(CraftServer server);
++}
+diff --git a/src/main/java/xyz/holocons/mc/entity/VirtualGolem.java b/src/main/java/xyz/holocons/mc/entity/VirtualGolem.java
+index 94ce4ee71722cba2612e690666c6a299a8e07fae..6aedd1593a877673a2925f89843c416b02decd53 100644
+--- a/src/main/java/xyz/holocons/mc/entity/VirtualGolem.java
++++ b/src/main/java/xyz/holocons/mc/entity/VirtualGolem.java
+@@ -7,7 +7,11 @@ import net.minecraft.world.entity.animal.AbstractGolem;
+ import net.minecraft.world.entity.animal.IronGolem;
+ import net.minecraft.world.level.Level;
+ 
+-public class VirtualGolem extends AbstractGolem {
++import org.bukkit.craftbukkit.entity.CraftEntity;
++import org.bukkit.craftbukkit.entity.CraftGolem;
++import org.bukkit.craftbukkit.CraftServer;
++
++public class VirtualGolem extends AbstractGolem implements HoloConsEntity {
+ 
+     public VirtualGolem(EntityType<? extends VirtualGolem> type, Level world) {
+         super(type, world);
+@@ -16,4 +20,9 @@ public class VirtualGolem extends AbstractGolem {
+     public static AttributeSupplier.Builder createAttributes() {
+         return IronGolem.createAttributes().add(Attributes.MAX_HEALTH, 200.0D);
+     }
++
++    @Override
++    public CraftEntity createBukkitEntity(CraftServer server) {
++        return new CraftGolem(server, this);
++    }
+ }

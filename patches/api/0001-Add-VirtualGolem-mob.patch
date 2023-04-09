@@ -1,0 +1,18 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Derek Lee <derek.scott.lee13@gmail.com>
+Date: Sat, 8 Apr 2023 07:17:16 -0700
+Subject: [PATCH] Add VirtualGolem mob
+
+
+diff --git a/src/main/java/org/bukkit/entity/EntityType.java b/src/main/java/org/bukkit/entity/EntityType.java
+index 91664b99f1158cb8a2e3c72ec082bf3c39487649..51d42b32e1a8757847ff6f11ca3ae96e65b8bfe1 100644
+--- a/src/main/java/org/bukkit/entity/EntityType.java
++++ b/src/main/java/org/bukkit/entity/EntityType.java
+@@ -291,6 +291,7 @@ public enum EntityType implements Keyed, Translatable, net.kyori.adventure.trans
+      */
+     LIGHTNING("lightning_bolt", LightningStrike.class, -1, false),
+     PLAYER("player", Player.class, -1, false),
++    VIRTUAL_GOLEM("virtual_golem", Golem.class, -1, false), // HoloCons - add VirtualGolem mob
+     /**
+      * An unknown entity without an Entity Class
+      */
