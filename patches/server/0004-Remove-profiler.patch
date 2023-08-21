@@ -1760,9 +1760,27 @@ index d8b1e39184aff3a22d5ec024afc40e4bb671d0a7..3d48ad9b5e90e5dac64bf9faf292cca7
  
      // Paper start
 diff --git a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
-index 62da5b7ea84ad4e7f7b292a7a813fabd3f6bea08..9a8fbf20c4a3033183c5a8952a4969a6dfe17e87 100644
+index 62da5b7ea84ad4e7f7b292a7a813fabd3f6bea08..94ab7137530995f3ed5d8103729af9c3d6e94be3 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
+@@ -536,13 +536,13 @@ public class LevelChunk extends ChunkAccess {
+                 }
+ 
+                 if (LightEngine.hasDifferentLightProperties(this, blockposition, iblockdata1, iblockdata)) {
+-                    ProfilerFiller gameprofilerfiller = this.level.getProfiler();
++                    // HoloCons - remove profiler
+ 
+-                    gameprofilerfiller.push("updateSkyLightSources");
++                    // HoloCons - remove profiler
+                     this.skyLightSources.update(this, j, i, l);
+-                    gameprofilerfiller.popPush("queueCheckLight");
++                    // HoloCons - remove profiler
+                     this.level.getChunkSource().getLightEngine().checkBlock(blockposition);
+-                    gameprofilerfiller.pop();
++                    // HoloCons - remove profiler
+                 }
+ 
+                 boolean flag3 = iblockdata1.hasBlockEntity();
 @@ -1256,9 +1256,9 @@ public class LevelChunk extends ChunkAccess {
  
                  if (LevelChunk.this.isTicking(blockposition)) {
