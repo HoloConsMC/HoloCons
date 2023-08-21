@@ -5,10 +5,10 @@ Subject: [PATCH] Remove profiler
 
 
 diff --git a/src/main/java/net/minecraft/commands/Commands.java b/src/main/java/net/minecraft/commands/Commands.java
-index e92864ecf32dd984f6f87f7b05341e43af3a2977..e8fefe26428fd9b2e8d2417393bb54738a8c5ffd 100644
+index 80c2c8d565f03ae0ea24fbdecdbe2bc5b9aa4b82..a72d2d6d8c77401edf68a09d95a5b867e85c7e2b 100644
 --- a/src/main/java/net/minecraft/commands/Commands.java
 +++ b/src/main/java/net/minecraft/commands/Commands.java
-@@ -303,9 +303,9 @@ public class Commands {
+@@ -311,9 +311,9 @@ public class Commands {
      public int performCommand(ParseResults<CommandSourceStack> parseresults, String s, String label) { // CraftBukkit
          CommandSourceStack commandlistenerwrapper = (CommandSourceStack) parseresults.getContext().getSource();
  
@@ -20,7 +20,7 @@ index e92864ecf32dd984f6f87f7b05341e43af3a2977..e8fefe26428fd9b2e8d2417393bb5473
  
          byte b0;
  
-@@ -388,7 +388,7 @@ public class Commands {
+@@ -396,7 +396,7 @@ public class Commands {
                  b0 = 0;
              }
          } finally {
@@ -30,10 +30,10 @@ index e92864ecf32dd984f6f87f7b05341e43af3a2977..e8fefe26428fd9b2e8d2417393bb5473
  
          return b0;
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 600252e9203c7d6b72e8ea02aa7e275249faf4bc..a9d1d283df882c15539ef7a7eedd80d900b5393f 100644
+index 54a678456c0ff645af7bc6b49724235779ffface..1d8ccf61820bfd7d96cf08ce8811cc19e49ec733 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -334,13 +334,13 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -336,13 +336,13 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
      public MinecraftServer(OptionSet options, WorldLoader.DataLoadContext worldLoader, Thread thread, LevelStorageSource.LevelStorageAccess convertable_conversionsession, PackRepository resourcepackrepository, WorldStem worldstem, Proxy proxy, DataFixer datafixer, Services services, ChunkProgressListenerFactory worldloadlistenerfactory) {
          super("Server");
          SERVER = this; // Paper - better singleton
@@ -46,10 +46,10 @@ index 600252e9203c7d6b72e8ea02aa7e275249faf4bc..a9d1d283df882c15539ef7a7eedd80d9
          this.onMetricsRecordingFinished = (path) -> {
 -        };
 +        };*/ // HoloCons - remove profiler
-         this.status = new ServerStatus();
          this.random = RandomSource.create();
          this.port = -1;
-@@ -932,9 +932,9 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+         this.levels = Maps.newLinkedHashMap();
+@@ -931,9 +931,9 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          }
          // Paper end
          // CraftBukkit end
@@ -61,7 +61,7 @@ index 600252e9203c7d6b72e8ea02aa7e275249faf4bc..a9d1d283df882c15539ef7a7eedd80d9
  
          MinecraftServer.LOGGER.info("Stopping server");
          Commands.COMMAND_SENDING_POOL.shutdownNow(); // Paper - Shutdown and don't bother finishing
-@@ -1160,23 +1160,23 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1158,23 +1158,23 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
                  }
                  // Spigot end
  
@@ -92,7 +92,7 @@ index 600252e9203c7d6b72e8ea02aa7e275249faf4bc..a9d1d283df882c15539ef7a7eedd80d9
                  this.isReady = true;
                  JvmProfiler.INSTANCE.onServerTick(this.averageTickTime);
              }
-@@ -1337,7 +1337,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1335,7 +1335,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
      }
  
      public void doRunTask(TickTask ticktask) { // CraftBukkit - decompile error
@@ -101,7 +101,7 @@ index 600252e9203c7d6b72e8ea02aa7e275249faf4bc..a9d1d283df882c15539ef7a7eedd80d9
          super.doRunTask(ticktask);
      }
  
-@@ -1422,7 +1422,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1402,7 +1402,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          if (playerSaveInterval < 0) {
              playerSaveInterval = autosavePeriod;
          }
@@ -110,7 +110,7 @@ index 600252e9203c7d6b72e8ea02aa7e275249faf4bc..a9d1d283df882c15539ef7a7eedd80d9
          final boolean fullSave = autosavePeriod > 0 && this.tickCount % autosavePeriod == 0;
          try {
              this.isSaving = true;
-@@ -1437,7 +1437,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1417,7 +1417,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          } finally {
              this.isSaving = false;
          }
@@ -119,28 +119,28 @@ index 600252e9203c7d6b72e8ea02aa7e275249faf4bc..a9d1d283df882c15539ef7a7eedd80d9
          // Paper end
          io.papermc.paper.util.CachedLists.reset(); // Paper
          // Paper start - move executeAll() into full server tick timing
-@@ -1450,7 +1450,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1430,7 +1430,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          long remaining = (TICK_TIME - (endTime - lastTick)) - catchupTime;
          new com.destroystokyo.paper.event.server.ServerTickEndEvent(this.tickCount, ((double)(endTime - lastTick) / 1000000D), remaining).callEvent();
          // Paper end
 -        this.profiler.push("tallying");
 +        // HoloCons - remove profiler
-         long l = this.tickTimes[this.tickCount % 100] = Util.getNanos() - i;
+         long j = this.tickTimes[this.tickCount % 100] = Util.getNanos() - i;
  
-         this.averageTickTime = this.averageTickTime * 0.8F + (float) l / 1000000.0F * 0.19999999F;
-@@ -1463,7 +1463,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+         this.averageTickTime = this.averageTickTime * 0.8F + (float) j / 1000000.0F * 0.19999999F;
+@@ -1442,7 +1442,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+         tickTimes60s.add(this.tickCount, j);
          // Paper end
- 
-         this.frameTimer.logFrameDuration(i1 - i);
+         this.frameTimer.logFrameDuration(k - i);
 -        this.profiler.pop();
 +        // HoloCons - remove profiler
          org.spigotmc.WatchdogThread.tick(); // Spigot
          // Paper // HoloCons - remove timings
      }
-@@ -1472,11 +1472,11 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
-         // Spigot // Paper // HoloCons - remove timings
-         this.server.getScheduler().mainThreadHeartbeat(this.tickCount); // CraftBukkit
-         // Spigot // Paper // HoloCons - remove timings
+@@ -1494,11 +1494,11 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+         });
+         // Paper end - Folia scheduler API
+         io.papermc.paper.adventure.providers.ClickCallbackProviderImpl.CALLBACK_MANAGER.handleQueue(this.tickCount); // Paper
 -        this.profiler.push("commandFunctions");
 +        // HoloCons - remove profiler
          // Spigot // Paper // HoloCons - remove timings
@@ -151,9 +151,9 @@ index 600252e9203c7d6b72e8ea02aa7e275249faf4bc..a9d1d283df882c15539ef7a7eedd80d9
          //Iterator iterator = this.getAllLevels().iterator(); // Paper - moved down
  
          // CraftBukkit start
-@@ -1517,18 +1517,18 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
-             worldserver.hasEntityMoveEvent =  io.papermc.paper.event.entity.EntityMoveEvent.getHandlerList().getRegisteredListeners().length > 0; // Paper
+@@ -1539,18 +1539,18 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              net.minecraft.world.level.block.entity.HopperBlockEntity.skipHopperEvents = worldserver.paperConfig().hopper.disableMoveEvent || org.bukkit.event.inventory.InventoryMoveItemEvent.getHandlerList().getRegisteredListeners().length == 0; // Paper
+             worldserver.hasEntityMoveEvent =  io.papermc.paper.event.entity.EntityMoveEvent.getHandlerList().getRegisteredListeners().length > 0; // Paper
  
 -            this.profiler.push(() -> {
 +            /*this.profiler.push(() -> { // HoloCons - remove profiler
@@ -164,7 +164,7 @@ index 600252e9203c7d6b72e8ea02aa7e275249faf4bc..a9d1d283df882c15539ef7a7eedd80d9
              if (this.tickCount % 20 == 0) {
 -                this.profiler.push("timeSync");
 +                // HoloCons - remove profiler
-                 this.playerList.broadcastAll(new PacketPlayOutUpdateTime(worldserver.getGameTime(), worldserver.getDayTime(), worldserver.getGameRules().getBoolean(GameRules.RULE_DAYLIGHT)), worldserver.dimension());
+                 this.synchronizeTime(worldserver);
 -                this.profiler.pop();
 +                // HoloCons - remove profiler
              }
@@ -175,7 +175,7 @@ index 600252e9203c7d6b72e8ea02aa7e275249faf4bc..a9d1d283df882c15539ef7a7eedd80d9
  
              try {
                  // Spigot // HoloCons - remove timings
-@@ -1554,17 +1554,17 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1576,17 +1576,17 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
                  throw new ReportedException(crashreport);
              }
  
@@ -197,7 +197,7 @@ index 600252e9203c7d6b72e8ea02aa7e275249faf4bc..a9d1d283df882c15539ef7a7eedd80d9
          // Spigot // Paper // HoloCons - remove timings
          this.playerList.tick();
          // Spigot // Paper // HoloCons - remove timings
-@@ -1572,7 +1572,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1594,7 +1594,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              GameTestTicker.SINGLETON.tick();
          }
  
@@ -206,7 +206,7 @@ index 600252e9203c7d6b72e8ea02aa7e275249faf4bc..a9d1d283df882c15539ef7a7eedd80d9
  
          // Spigot // Paper // HoloCons - remove timings
          for (int i = 0; i < this.tickables.size(); ++i) {
-@@ -1580,7 +1580,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1602,7 +1602,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          }
          // Spigot // Paper // HoloCons - remove timings
  
@@ -214,8 +214,26 @@ index 600252e9203c7d6b72e8ea02aa7e275249faf4bc..a9d1d283df882c15539ef7a7eedd80d9
 +        // HoloCons - remove profiler
      }
  
+     private void synchronizeTime(ServerLevel world) {
+@@ -1610,7 +1610,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+     }
+ 
+     public void forceTimeSynchronization() {
+-        this.profiler.push("timeSync");
++        // HoloCons - remove profiler
+         Iterator iterator = this.getAllLevels().iterator();
+ 
+         while (iterator.hasNext()) {
+@@ -1619,7 +1619,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+             this.synchronizeTime(worldserver);
+         }
+ 
+-        this.profiler.pop();
++        // HoloCons - remove profiler
+     }
+ 
      public boolean isNetherEnabled() {
-@@ -2238,7 +2238,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -2272,7 +2272,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
      }
  
      public ProfilerFiller getProfiler() {
@@ -224,7 +242,7 @@ index 600252e9203c7d6b72e8ea02aa7e275249faf4bc..a9d1d283df882c15539ef7a7eedd80d9
      }
  
      public abstract boolean isSingleplayerOwner(GameProfile profile);
-@@ -2477,7 +2477,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -2511,7 +2511,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
      // CraftBukkit end
  
      private void startMetricsRecordingTick() {
@@ -233,7 +251,7 @@ index 600252e9203c7d6b72e8ea02aa7e275249faf4bc..a9d1d283df882c15539ef7a7eedd80d9
              this.metricsRecorder = ActiveMetricsRecorder.createStarted(new ServerMetricsSamplersProvider(Util.timeSource, this.isDedicatedServer()), Util.timeSource, Util.ioPool(), new MetricsPersister("server"), this.onMetricsRecordingStopped, (path) -> {
                  this.executeBlocking(() -> {
                      this.saveDebugReport(path.resolve("server"));
-@@ -2489,38 +2489,38 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -2523,38 +2523,38 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
  
          this.profiler = SingleTickProfiler.decorateFiller(this.metricsRecorder.getProfiler(), SingleTickProfiler.createTickProfiler("Server"));
          this.metricsRecorder.startTick();
@@ -282,7 +300,7 @@ index 600252e9203c7d6b72e8ea02aa7e275249faf4bc..a9d1d283df882c15539ef7a7eedd80d9
      }
  
      public Path getWorldPath(LevelResource worldSavePath) {
-@@ -2569,15 +2569,15 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -2603,15 +2603,15 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
      }
  
      public boolean isTimeProfilerRunning() {
@@ -302,10 +320,10 @@ index 600252e9203c7d6b72e8ea02aa7e275249faf4bc..a9d1d283df882c15539ef7a7eedd80d9
          } else {
              ProfileResults methodprofilerresults = this.debugCommandProfiler.stop(Util.getNanos(), this.tickCount);
 diff --git a/src/main/java/net/minecraft/server/ServerFunctionManager.java b/src/main/java/net/minecraft/server/ServerFunctionManager.java
-index fe8d62e90acc5d6ac58b724822694d8383c4dea0..18fb86b307546d562197461184a1a831e5199fa7 100644
+index 6897325267e948518dfb826bee0b3dc74087d1c5..6cab15caba2d719a4c95a88b85ab24a5da391fee 100644
 --- a/src/main/java/net/minecraft/server/ServerFunctionManager.java
 +++ b/src/main/java/net/minecraft/server/ServerFunctionManager.java
-@@ -57,10 +57,10 @@ public class ServerFunctionManager {
+@@ -58,10 +58,10 @@ public class ServerFunctionManager {
      }
  
      private void executeTagFunctions(Collection<CommandFunction> functions, ResourceLocation label) {
@@ -318,7 +336,7 @@ index fe8d62e90acc5d6ac58b724822694d8383c4dea0..18fb86b307546d562197461184a1a831
          Iterator iterator = functions.iterator();
  
          while (iterator.hasNext()) {
-@@ -69,7 +69,7 @@ public class ServerFunctionManager {
+@@ -70,7 +70,7 @@ public class ServerFunctionManager {
              this.execute(customfunction, this.getGameLoopSender());
          }
  
@@ -327,22 +345,22 @@ index fe8d62e90acc5d6ac58b724822694d8383c4dea0..18fb86b307546d562197461184a1a831
      }
  
      public int execute(CommandFunction function, CommandSourceStack source) {
-@@ -177,10 +177,10 @@ public class ServerFunctionManager {
+@@ -187,10 +187,10 @@ public class ServerFunctionManager {
  
                  try {
-                     ServerFunctionManager.QueuedCommand customfunctiondata_b = (ServerFunctionManager.QueuedCommand) this.commandQueue.removeFirst();
+                     ServerFunctionManager.QueuedCommand customfunctiondata_queuedcommand = (ServerFunctionManager.QueuedCommand) this.commandQueue.removeFirst();
 -                    ProfilerFiller gameprofilerfiller = ServerFunctionManager.this.server.getProfiler();
 +                    // HoloCons - remove profiler
  
-                     Objects.requireNonNull(customfunctiondata_b);
--                    gameprofilerfiller.push(customfunctiondata_b::toString);
+                     Objects.requireNonNull(customfunctiondata_queuedcommand);
+-                    gameprofilerfiller.push(customfunctiondata_queuedcommand::toString);
 +                    // HoloCons - remove profiler
-                     this.depth = customfunctiondata_b.depth;
-                     customfunctiondata_b.execute(ServerFunctionManager.this, this.commandQueue, i, this.tracer);
-                     if (!this.nestedCalls.isEmpty()) {
-@@ -192,7 +192,7 @@ public class ServerFunctionManager {
-                         this.nestedCalls.clear();
-                     }
+                     this.depth = customfunctiondata_queuedcommand.depth;
+                     customfunctiondata_queuedcommand.execute(ServerFunctionManager.this, this.commandQueue, i, this.tracer);
+                     if (this.abortCurrentDepth) {
+@@ -209,7 +209,7 @@ public class ServerFunctionManager {
+ 
+                     this.nestedCalls.clear();
                  } finally {
 -                    ServerFunctionManager.this.server.getProfiler().pop();
 +                    // HoloCons - remove profiler
@@ -350,10 +368,10 @@ index fe8d62e90acc5d6ac58b724822694d8383c4dea0..18fb86b307546d562197461184a1a831
  
                  ++j;
 diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
-index f78829e825a938d0981287dba73d5ee2bb2a7e22..74626951d3727211c3226b03496efe265a56da92 100644
+index ccb6ef5ecb7c691c61fed796612b69a19ce91d51..0840b392efc2cd715a32c22f6ac4d20cba3ca28f 100644
 --- a/src/main/java/net/minecraft/server/level/ChunkMap.java
 +++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
-@@ -618,20 +618,20 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -637,20 +637,20 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
      }
  
      protected void tick(BooleanSupplier shouldKeepTicking) {
@@ -379,10 +397,10 @@ index f78829e825a938d0981287dba73d5ee2bb2a7e22..74626951d3727211c3226b03496efe26
  
      public boolean hasWork() {
 diff --git a/src/main/java/net/minecraft/server/level/ServerChunkCache.java b/src/main/java/net/minecraft/server/level/ServerChunkCache.java
-index bb94fd55ab392d4409c46878cf4ce0c235f099e4..16d9e85128b3e739c08fd646e90cc2ade1f865f3 100644
+index d93b73ecae4a0794b09d6e51393ec27bdfae6fe1..1beddc61d898de7e70d8e71fd702ce2579448047 100644
 --- a/src/main/java/net/minecraft/server/level/ServerChunkCache.java
 +++ b/src/main/java/net/minecraft/server/level/ServerChunkCache.java
-@@ -428,16 +428,16 @@ public class ServerChunkCache extends ChunkSource {
+@@ -277,16 +277,16 @@ public class ServerChunkCache extends ChunkSource {
                  return ifLoaded;
              }
              // Paper end
@@ -402,7 +420,7 @@ index bb94fd55ab392d4409c46878cf4ce0c235f099e4..16d9e85128b3e739c08fd646e90cc2ad
              CompletableFuture<Either<ChunkAccess, ChunkHolder.ChunkLoadingFailure>> completablefuture = this.getChunkFutureMainThread(x, z, leastStatus, create, true); // Paper
              ServerChunkCache.MainThreadExecutor chunkproviderserver_b = this.mainThreadProcessor;
  
-@@ -625,24 +625,24 @@ public class ServerChunkCache extends ChunkSource {
+@@ -475,24 +475,24 @@ public class ServerChunkCache extends ChunkSource {
      // CraftBukkit start - modelled on below
      public void purgeUnload() {
          if (true) return; // Paper - tickets will be removed later, this behavior isn't really well accounted for by the chunk system
@@ -431,8 +449,8 @@ index bb94fd55ab392d4409c46878cf4ce0c235f099e4..16d9e85128b3e739c08fd646e90cc2ad
 +        // HoloCons - remove profiler
          if (tickChunks) {
              // Paper - timings // HoloCons - remove timings
-             this.chunkMap.playerChunkManager.tick(); // Paper - this is mostly is to account for view distance changes
-@@ -651,10 +651,10 @@ public class ServerChunkCache extends ChunkSource {
+             this.chunkMap.level.playerChunkLoader.tick(); // Paper - replace player chunk loader - this is mostly required to account for view distance changes
+@@ -501,10 +501,10 @@ public class ServerChunkCache extends ChunkSource {
          }
  
          // Spigot // HoloCons - remove timings
@@ -445,7 +463,7 @@ index bb94fd55ab392d4409c46878cf4ce0c235f099e4..16d9e85128b3e739c08fd646e90cc2ad
          this.clearCache();
      }
  
-@@ -700,13 +700,13 @@ public class ServerChunkCache extends ChunkSource {
+@@ -550,13 +550,13 @@ public class ServerChunkCache extends ChunkSource {
              }
              // Paper end - optimize isOutisdeRange
              LevelData worlddata = this.level.getLevelData();
@@ -462,7 +480,7 @@ index bb94fd55ab392d4409c46878cf4ce0c235f099e4..16d9e85128b3e739c08fd646e90cc2ad
              // Paper - timings // HoloCons - remove timings
              int l = this.distanceManager.getNaturalSpawnChunkCount();
              // Paper start - per player mob spawning
-@@ -724,13 +724,13 @@ public class ServerChunkCache extends ChunkSource {
+@@ -584,13 +584,13 @@ public class ServerChunkCache extends ChunkSource {
              // Paper - timings // HoloCons - remove timings
  
              this.lastSpawnState = spawnercreature_d;
@@ -478,7 +496,7 @@ index bb94fd55ab392d4409c46878cf4ce0c235f099e4..16d9e85128b3e739c08fd646e90cc2ad
              boolean flag2 = this.level.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING) && !this.level.players().isEmpty(); // CraftBukkit
  
              // Paper - only shuffle if per-player mob spawning is disabled
-@@ -781,15 +781,15 @@ public class ServerChunkCache extends ChunkSource {
+@@ -642,15 +642,15 @@ public class ServerChunkCache extends ChunkSource {
              }
              // Paper end - optimise chunk tick iteration
              // Paper // HoloCons - remove timings
@@ -497,7 +515,7 @@ index bb94fd55ab392d4409c46878cf4ce0c235f099e4..16d9e85128b3e739c08fd646e90cc2ad
              // Paper - timing // HoloCons - remove timings
              if (!this.chunkMap.needsChangeBroadcasting.isEmpty()) {
                  ReferenceOpenHashSet<ChunkHolder> copy = this.chunkMap.needsChangeBroadcasting.clone();
-@@ -803,7 +803,7 @@ public class ServerChunkCache extends ChunkSource {
+@@ -664,7 +664,7 @@ public class ServerChunkCache extends ChunkSource {
                  }
              }
              // Paper - timing // HoloCons - remove timings
@@ -506,7 +524,7 @@ index bb94fd55ab392d4409c46878cf4ce0c235f099e4..16d9e85128b3e739c08fd646e90cc2ad
              // Paper end - use set of chunks requiring updates, rather than iterating every single one loaded
              // Paper start - controlled flush for entity tracker packets
              List<net.minecraft.network.Connection> disabledFlushes = new java.util.ArrayList<>(this.level.players.size());
-@@ -994,7 +994,7 @@ public class ServerChunkCache extends ChunkSource {
+@@ -855,7 +855,7 @@ public class ServerChunkCache extends ChunkSource {
  
          @Override
          protected void doRunTask(Runnable task) {
@@ -516,10 +534,10 @@ index bb94fd55ab392d4409c46878cf4ce0c235f099e4..16d9e85128b3e739c08fd646e90cc2ad
          }
  
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index 686e5a75ffb24a3b1f62d5446e2bcf66b02f6da0..6e6492de645d342bb92aec848f4271784fbed763 100644
+index ba46e2e53be279f4442edc1289bacbc4d3b53505..db3465f0ef3ca23c3c5656a7c8d3d266988ada02 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
-@@ -633,12 +633,12 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -774,12 +774,12 @@ public class ServerLevel extends Level implements WorldGenLevel {
              }
          }
          // Paper end - optimise checkDespawn
@@ -535,7 +553,7 @@ index 686e5a75ffb24a3b1f62d5446e2bcf66b02f6da0..6e6492de645d342bb92aec848f427178
          this.advanceWeatherCycle();
          int i = this.getGameRules().getInt(GameRules.RULE_PLAYERS_SLEEPING_PERCENTAGE);
          long j;
-@@ -665,32 +665,32 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -806,32 +806,32 @@ public class ServerLevel extends Level implements WorldGenLevel {
  
          this.updateSkyBrightness();
          this.tickTime();
@@ -576,7 +594,7 @@ index 686e5a75ffb24a3b1f62d5446e2bcf66b02f6da0..6e6492de645d342bb92aec848f427178
          boolean flag = true || !this.players.isEmpty() || !this.getForcedChunks().isEmpty(); // CraftBukkit - this prevents entity cleanup, other issues on servers with no players
  
          if (flag) {
-@@ -698,12 +698,12 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -839,12 +839,12 @@ public class ServerLevel extends Level implements WorldGenLevel {
          }
  
          if (flag || this.emptyTime++ < 300) {
@@ -592,7 +610,7 @@ index 686e5a75ffb24a3b1f62d5446e2bcf66b02f6da0..6e6492de645d342bb92aec848f427178
              }
  
              org.spigotmc.ActivationRange.activateEntities(this); // Spigot
-@@ -713,9 +713,9 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -854,9 +854,9 @@ public class ServerLevel extends Level implements WorldGenLevel {
                      if (false && this.shouldDiscardEntity(entity)) { // CraftBukkit - We prevent spawning in general, so this butchering is not needed
                          entity.discard();
                      } else {
@@ -604,7 +622,7 @@ index 686e5a75ffb24a3b1f62d5446e2bcf66b02f6da0..6e6492de645d342bb92aec848f427178
                          if (true || this.chunkSource.chunkMap.getDistanceManager().inEntityTickingRange(entity.chunkPosition().toLong())) { // Paper - now always true if in the ticking list
                              Entity entity1 = entity.getVehicle();
  
-@@ -727,22 +727,22 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -868,22 +868,22 @@ public class ServerLevel extends Level implements WorldGenLevel {
                                  entity.stopRiding();
                              }
  
@@ -632,7 +650,7 @@ index 686e5a75ffb24a3b1f62d5446e2bcf66b02f6da0..6e6492de645d342bb92aec848f427178
      }
  
      @Override
-@@ -801,9 +801,9 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -942,9 +942,9 @@ public class ServerLevel extends Level implements WorldGenLevel {
          boolean flag = this.isRaining();
          int j = chunkcoordintpair.getMinBlockX();
          int k = chunkcoordintpair.getMinBlockZ();
@@ -644,16 +662,16 @@ index 686e5a75ffb24a3b1f62d5446e2bcf66b02f6da0..6e6492de645d342bb92aec848f427178
          final BlockPos.MutableBlockPos blockposition = this.chunkTickMutablePosition; // Paper - use mutable to reduce allocation rate, final to force compile fail on change
  
          if (!this.paperConfig().environment.disableThunder && flag && this.isThundering() && this.spigotConfig.thunderChance > 0 && this.random.nextInt(this.spigotConfig.thunderChance) == 0) { // Spigot // Paper - disable thunder
-@@ -833,7 +833,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -974,7 +974,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
              }
          }
  
 -        gameprofilerfiller.popPush("iceandsnow");
 +        // HoloCons - remove profiler
          int l;
+         int i1;
  
-         if (!this.paperConfig().environment.disableIceAndSnow && this.random.nextInt(16) == 0) { // Paper - Disable ice and snow
-@@ -885,7 +885,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -1026,7 +1026,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
          }
  
          // Paper start - optimise random block ticking
@@ -662,7 +680,7 @@ index 686e5a75ffb24a3b1f62d5446e2bcf66b02f6da0..6e6492de645d342bb92aec848f427178
          // Paper // HoloCons - remove timings
          if (randomTickSpeed > 0) {
              LevelChunkSection[] sections = chunk.getSections();
-@@ -921,7 +921,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -1062,7 +1062,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
          }
          // Paper end - optimise random block ticking
          // Paper // HoloCons - remove timings
@@ -671,7 +689,7 @@ index 686e5a75ffb24a3b1f62d5446e2bcf66b02f6da0..6e6492de645d342bb92aec848f427178
      }
  
      public Optional<BlockPos> findLightningRod(BlockPos pos) {
-@@ -1199,19 +1199,19 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -1340,19 +1340,19 @@ public class ServerLevel extends Level implements WorldGenLevel {
          // HoloCons - remove timings
          // Paper end - timings
          entity.setOldPosAndRot();
@@ -695,7 +713,7 @@ index 686e5a75ffb24a3b1f62d5446e2bcf66b02f6da0..6e6492de645d342bb92aec848f427178
          // Paper - timings // HoloCons - remove timings
          Iterator iterator = entity.getPassengers().iterator();
  
-@@ -1240,12 +1240,12 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -1381,12 +1381,12 @@ public class ServerLevel extends Level implements WorldGenLevel {
                  // Paper end
                  passenger.setOldPosAndRot();
                  ++passenger.tickCount;
@@ -711,7 +729,7 @@ index 686e5a75ffb24a3b1f62d5446e2bcf66b02f6da0..6e6492de645d342bb92aec848f427178
                  // Paper start - EAR 2
                  if (isActive) {
                  passenger.rideTick();
-@@ -1257,7 +1257,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -1398,7 +1398,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
                      vehicle.positionRider(passenger);
                  }
                  // Paper end - EAR 2
@@ -721,10 +739,10 @@ index 686e5a75ffb24a3b1f62d5446e2bcf66b02f6da0..6e6492de645d342bb92aec848f427178
  
                  while (iterator.hasNext()) {
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 289429eb464548acc80262a49444f49f8f57fc0c..a2fe59d19f47733176ca1af59c9002c0fc15d00c 100644
+index 161c40692e8d469fad4169908b9353be0f85d0d8..2334025f9547da00bd9e14ebadb5cd0410cd199a 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-@@ -1149,7 +1149,7 @@ public class ServerPlayer extends Player {
+@@ -1206,7 +1206,7 @@ public class ServerPlayer extends Player {
              PortalInfo shapedetectorshape = this.findDimensionEntryPoint(worldserver);
  
              if (shapedetectorshape != null) {
@@ -733,7 +751,7 @@ index 289429eb464548acc80262a49444f49f8f57fc0c..a2fe59d19f47733176ca1af59c9002c0
                  worldserver = shapedetectorshape.world; // CraftBukkit
                  if (worldserver == null) { } else // CraftBukkit - empty to fall through to null to event
                  if (resourcekey == LevelStem.OVERWORLD && worldserver.getTypeKey() == LevelStem.NETHER) { // CraftBukkit
-@@ -1172,8 +1172,8 @@ public class ServerPlayer extends Player {
+@@ -1229,8 +1229,8 @@ public class ServerPlayer extends Player {
              worldserver = ((CraftWorld) exit.getWorld()).getHandle();
              // CraftBukkit end
  
@@ -744,7 +762,7 @@ index 289429eb464548acc80262a49444f49f8f57fc0c..a2fe59d19f47733176ca1af59c9002c0
              if (true) { // CraftBukkit
                  this.isChangingDimension = true; // CraftBukkit - Set teleport invulnerability only if player changing worlds
  
-@@ -1191,7 +1191,7 @@ public class ServerPlayer extends Player {
+@@ -1247,7 +1247,7 @@ public class ServerPlayer extends Player {
                  this.connection.teleport(exit); // CraftBukkit - use internal teleport without event
                  this.connection.resetPosition();
                  worldserver.addDuringPortalTeleport(this);
@@ -754,10 +772,10 @@ index 289429eb464548acc80262a49444f49f8f57fc0c..a2fe59d19f47733176ca1af59c9002c0
                  this.connection.send(new ClientboundPlayerAbilitiesPacket(this.getAbilities()));
                  playerlist.sendLevelInfo(this, worldserver);
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 4f3863b3f0d4d6be7b9183d50c8aa5bc1ea2a7bd..3f84d5ec51d83c07c354b95cd9b42467693e73b2 100644
+index 14b82c7e786befc916c2cc4eadc19f10bcb5026f..9eed5c304ea29fd0fb31001e25dd160c87e35430 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -390,7 +390,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+@@ -397,7 +397,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
              this.aboveGroundVehicleTickCount = 0;
          }
  
@@ -766,7 +784,7 @@ index 4f3863b3f0d4d6be7b9183d50c8aa5bc1ea2a7bd..3f84d5ec51d83c07c354b95cd9b42467
          // Paper Start - give clients a longer time to respond to pings as per pre 1.12.2 timings
          // This should effectively place the keepalive handling back to "as it was" before 1.12.2
          long currentTime = Util.getMillis();
-@@ -411,7 +411,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+@@ -418,7 +418,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
          }
          // Paper end
  
@@ -796,7 +814,7 @@ index 9ddbfcf80d9a381dace78a62880f85a4d767e0eb..2a6e59c3858aa497d409e49e27b0a56f
      }
  
 diff --git a/src/main/java/net/minecraft/util/profiling/ActiveProfiler.java b/src/main/java/net/minecraft/util/profiling/ActiveProfiler.java
-index 6d96da16f25e2359e053c45270310886e168f828..df3d794050ad17042edb5bad813b5ab1c85e9b6f 100644
+index 196c7331138fee2822c76aacd136f9da040e0049..0ddb6b5c7940ea7d3359624e0fbd737ce0149e14 100644
 --- a/src/main/java/net/minecraft/util/profiling/ActiveProfiler.java
 +++ b/src/main/java/net/minecraft/util/profiling/ActiveProfiler.java
 @@ -55,7 +55,7 @@ public class ActiveProfiler implements ProfileCollector {
@@ -846,7 +864,7 @@ index 6d96da16f25e2359e053c45270310886e168f828..df3d794050ad17042edb5bad813b5ab1
  
      private ActiveProfiler.PathEntry getCurrentEntry() {
 diff --git a/src/main/java/net/minecraft/util/profiling/ProfilerFiller.java b/src/main/java/net/minecraft/util/profiling/ProfilerFiller.java
-index 5725c6593480fada65facc29664a00a8cc073512..653dee143aa73f15b49e31e34a5fd24f7ad28aa2 100644
+index 2e6e8eac987c4ef6b2dcd3de592d8a51d2b29792..5dc1baf8ef9671aac79276a25ec0170e2a14d07d 100644
 --- a/src/main/java/net/minecraft/util/profiling/ProfilerFiller.java
 +++ b/src/main/java/net/minecraft/util/profiling/ProfilerFiller.java
 @@ -6,32 +6,44 @@ import net.minecraft.util.profiling.metrics.MetricCategory;
@@ -884,7 +902,7 @@ index 5725c6593480fada65facc29664a00a8cc073512..653dee143aa73f15b49e31e34a5fd24f
      }
  
 +    @io.papermc.paper.annotation.DoNotUse // HoloCons - remove profiler
-     void incrementCounter(String marker, int i);
+     void incrementCounter(String marker, int num);
  
 +    @io.papermc.paper.annotation.DoNotUse // HoloCons - remove profiler
      default void incrementCounter(Supplier<String> markerGetter) {
@@ -893,7 +911,7 @@ index 5725c6593480fada65facc29664a00a8cc073512..653dee143aa73f15b49e31e34a5fd24f
      }
  
 +    @io.papermc.paper.annotation.DoNotUse // HoloCons - remove profiler
-     void incrementCounter(Supplier<String> markerGetter, int i);
+     void incrementCounter(Supplier<String> markerGetter, int num);
  
      static ProfilerFiller tee(final ProfilerFiller a, final ProfilerFiller b) {
 @@ -41,62 +53,62 @@ public interface ProfilerFiller {
@@ -963,54 +981,54 @@ index 5725c6593480fada65facc29664a00a8cc073512..653dee143aa73f15b49e31e34a5fd24f
                  }
  
                  @Override
-                 public void incrementCounter(String marker, int i) {
--                    a.incrementCounter(marker, i);
--                    b.incrementCounter(marker, i);
+                 public void incrementCounter(String marker, int num) {
+-                    a.incrementCounter(marker, num);
+-                    b.incrementCounter(marker, num);
 +                    // HoloCons - remove profiler
 +                    // HoloCons - remove profiler
                  }
  
                  @Override
-                 public void incrementCounter(Supplier<String> markerGetter, int i) {
--                    a.incrementCounter(markerGetter, i);
--                    b.incrementCounter(markerGetter, i);
+                 public void incrementCounter(Supplier<String> markerGetter, int num) {
+-                    a.incrementCounter(markerGetter, num);
+-                    b.incrementCounter(markerGetter, num);
 +                    // HoloCons - remove profiler
 +                    // HoloCons - remove profiler
                  }
              };
          }
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 1eaab1f6923e6aa34b643293347348e5cc19af3c..f9217128a07d768069f1781b9e6802d785500ee7 100644
+index 0ed297f189e5d21c497ac78294db6ca664c0f2c4..18ceee87bd4bb00daab366d3c2845917293bc463 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -788,7 +788,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -809,7 +809,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
      // CraftBukkit end
  
      public void baseTick() {
--        this.level.getProfiler().push("entityBaseTick");
+-        this.level().getProfiler().push("entityBaseTick");
 +        // HoloCons - remove profiler
          if (firstTick && this instanceof net.minecraft.world.entity.NeutralMob neutralMob) neutralMob.tickInitialPersistentAnger(level); // Paper - Update last hurt when ticking
          this.feetBlockState = null;
          if (this.isPassenger() && this.getVehicle().isRemoved()) {
-@@ -849,7 +849,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -870,7 +870,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
          }
  
          this.firstTick = false;
--        this.level.getProfiler().pop();
+-        this.level().getProfiler().pop();
 +        // HoloCons - remove profiler
      }
  
      public void setSharedFlagOnFire(boolean onFire) {
-@@ -1023,7 +1023,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -1089,7 +1089,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
                  }
              }
  
--            this.level.getProfiler().push("move");
+-            this.level().getProfiler().push("move");
 +            // HoloCons - remove profiler
              if (this.stuckSpeedMultiplier.lengthSqr() > 1.0E-7D) {
                  movement = movement.multiply(this.stuckSpeedMultiplier);
                  this.stuckSpeedMultiplier = Vec3.ZERO;
-@@ -1032,7 +1032,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -1098,7 +1098,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
              // Paper start - ignore movement changes while inactive.
              if (isTemporarilyActive && !(this instanceof ItemEntity || this instanceof net.minecraft.world.entity.vehicle.AbstractMinecart) && movement == getDeltaMovement() && movementType == MoverType.SELF) {
                  setDeltaMovement(Vec3.ZERO);
@@ -1019,190 +1037,190 @@ index 1eaab1f6923e6aa34b643293347348e5cc19af3c..f9217128a07d768069f1781b9e6802d7
                  return;
              }
              // Paper end
-@@ -1053,8 +1053,8 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -1119,8 +1119,8 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
                  this.setPos(this.getX() + vec3d1.x, this.getY() + vec3d1.y, this.getZ() + vec3d1.z);
              }
  
--            this.level.getProfiler().pop();
--            this.level.getProfiler().push("rest");
+-            this.level().getProfiler().pop();
+-            this.level().getProfiler().push("rest");
 +            // HoloCons - remove profiler
 +            // HoloCons - remove profiler
              boolean flag = !Mth.equal(movement.x, vec3d1.x);
              boolean flag1 = !Mth.equal(movement.z, vec3d1.z);
  
-@@ -1073,7 +1073,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -1139,7 +1139,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
  
-             this.checkFallDamage(vec3d1.y, this.onGround, iblockdata, blockposition);
+             this.checkFallDamage(vec3d1.y, this.onGround(), iblockdata, blockposition);
              if (this.isRemoved()) {
--                this.level.getProfiler().pop();
+-                this.level().getProfiler().pop();
 +                // HoloCons - remove profiler
              } else {
                  if (this.horizontalCollision) {
                      Vec3 vec3d2 = this.getDeltaMovement();
-@@ -1214,7 +1214,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -1277,7 +1277,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
                      this.setRemainingFireTicks(-this.getFireImmuneTicks());
                  }
  
--                this.level.getProfiler().pop();
+-                this.level().getProfiler().pop();
 +                // HoloCons - remove profiler
              }
          }
          // Paper start - detailed watchdog information
-@@ -2894,7 +2894,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -3028,7 +3028,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
                  ServerLevel worldserver1 = minecraftserver.getLevel(resourcekey);
  
                  if (true && !this.isPassenger() && this.portalTime++ >= i) { // CraftBukkit
--                    this.level.getProfiler().push("portal");
+-                    this.level().getProfiler().push("portal");
 +                    // HoloCons - remove profiler
                      this.portalTime = i;
                      // Paper start
                      io.papermc.paper.event.entity.EntityPortalReadyEvent event = new io.papermc.paper.event.entity.EntityPortalReadyEvent(this.getBukkitEntity(), worldserver1 == null ? null : worldserver1.getWorld(), org.bukkit.PortalType.NETHER);
-@@ -2912,7 +2912,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -3046,7 +3046,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
                      }
                      } // Paper
                      // CraftBukkit end
--                    this.level.getProfiler().pop();
+-                    this.level().getProfiler().pop();
 +                    // HoloCons - remove profiler
                  }
  
                  this.isInsidePortal = false;
-@@ -3377,14 +3377,14 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -3517,14 +3517,14 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
          }
          // Paper end
-         if (this.level instanceof ServerLevel && !this.isRemoved()) {
--            this.level.getProfiler().push("changeDimension");
+         if (this.level() instanceof ServerLevel && !this.isRemoved()) {
+-            this.level().getProfiler().push("changeDimension");
 +            // HoloCons - remove profiler
              // CraftBukkit start
-             // this.decouple();
+             // this.unRide();
              if (worldserver == null) {
                  return null;
              }
              // CraftBukkit end
--            this.level.getProfiler().push("reposition");
+-            this.level().getProfiler().push("reposition");
 +            // HoloCons - remove profiler
              PortalInfo shapedetectorshape = (location == null) ? this.findDimensionEntryPoint(worldserver) : new PortalInfo(new Vec3(location.x(), location.y(), location.z()), Vec3.ZERO, this.yRot, this.xRot, worldserver, null); // CraftBukkit
  
              if (shapedetectorshape == null) {
-@@ -3418,7 +3418,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -3563,7 +3563,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
                  this.unRide();
                  // CraftBukkit end
  
--                this.level.getProfiler().popPush("reloading");
+-                this.level().getProfiler().popPush("reloading");
 +                // HoloCons - remove profiler
                  // Paper start - Change lead drop timing to prevent dupe
                  if (this instanceof Mob) {
                      ((Mob) this).dropLeash(true, true); // Paper drop lead
-@@ -3441,10 +3441,10 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -3586,10 +3586,10 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
                  }
  
                  this.removeAfterChangingDimensions();
--                this.level.getProfiler().pop();
+-                this.level().getProfiler().pop();
 +                // HoloCons - remove profiler
-                 ((ServerLevel) this.level).resetEmptyTime();
+                 ((ServerLevel) this.level()).resetEmptyTime();
                  worldserver.resetEmptyTime();
--                this.level.getProfiler().pop();
+-                this.level().getProfiler().pop();
 +                // HoloCons - remove profiler
                  return entity;
              }
          } else {
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 42eb78830855d7282b7f3f1bdbe85e632d489784..ac8f95345582f6a8e930626b7da50629fcab9ce6 100644
+index e11d7283662834047b2ff81a2fd25a4263792deb..6b27eecdaea380588a33e680152affcf306a5cf7 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-@@ -393,7 +393,7 @@ public abstract class LivingEntity extends Entity {
+@@ -405,7 +405,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
          }
  
          super.baseTick();
--        this.level.getProfiler().push("livingEntityBaseTick");
+-        this.level().getProfiler().push("livingEntityBaseTick");
 +        // HoloCons - remove profiler
-         if (this.fireImmune() || this.level.isClientSide) {
+         if (this.fireImmune() || this.level().isClientSide) {
              this.clearFire();
          }
-@@ -495,7 +495,7 @@ public abstract class LivingEntity extends Entity {
+@@ -507,7 +507,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
          this.yHeadRotO = this.yHeadRot;
          this.yRotO = this.getYRot();
          this.xRotO = this.getXRot();
--        this.level.getProfiler().pop();
+-        this.level().getProfiler().pop();
 +        // HoloCons - remove profiler
      }
  
      public boolean canSpawnSoulSpeedParticle() {
-@@ -3040,10 +3040,10 @@ public abstract class LivingEntity extends Entity {
+@@ -3037,10 +3037,10 @@ public abstract class LivingEntity extends Entity implements Attackable {
          }
  
          this.run += (f3 - this.run) * 0.3F;
--        this.level.getProfiler().push("headTurn");
+-        this.level().getProfiler().push("headTurn");
 +        // HoloCons - remove profiler
          f2 = this.tickHeadTurn(f1, f2);
--        this.level.getProfiler().pop();
--        this.level.getProfiler().push("rangeChecks");
+-        this.level().getProfiler().pop();
+-        this.level().getProfiler().push("rangeChecks");
 +        // HoloCons - remove profiler
 +        // HoloCons - remove profiler
  
          // Paper start - stop large pitch and yaw changes from crashing the server
          this.yRotO += Math.round((this.getYRot() - this.yRotO) / 360.0F) * 360.0F;
-@@ -3055,7 +3055,7 @@ public abstract class LivingEntity extends Entity {
+@@ -3052,7 +3052,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
          this.yHeadRotO += Math.round((this.yHeadRot - this.yHeadRotO) / 360.0F) * 360.0F;
          // Paper end
  
--        this.level.getProfiler().pop();
+-        this.level().getProfiler().pop();
 +        // HoloCons - remove profiler
          this.animStep += f2;
          if (this.isFallFlying()) {
              ++this.fallFlyTicks;
-@@ -3352,19 +3352,19 @@ public abstract class LivingEntity extends Entity {
+@@ -3341,19 +3341,19 @@ public abstract class LivingEntity extends Entity implements Attackable {
          }
  
          this.setDeltaMovement(d4, d5, d6);
--        this.level.getProfiler().push("ai");
+-        this.level().getProfiler().push("ai");
 +        // HoloCons - remove profiler
          if (this.isImmobile()) {
              this.jumping = false;
              this.xxa = 0.0F;
              this.zza = 0.0F;
          } else if (this.isEffectiveAi()) {
--            this.level.getProfiler().push("newAi");
+-            this.level().getProfiler().push("newAi");
 +            // HoloCons - remove profiler
              this.serverAiStep();
--            this.level.getProfiler().pop();
+-            this.level().getProfiler().pop();
 +            // HoloCons - remove profiler
          }
  
--        this.level.getProfiler().pop();
--        this.level.getProfiler().push("jump");
+-        this.level().getProfiler().pop();
+-        this.level().getProfiler().push("jump");
 +        // HoloCons - remove profiler
 +        // HoloCons - remove profiler
          if (this.jumping && this.isAffectedByFluids()) {
              double d7;
  
-@@ -3391,8 +3391,8 @@ public abstract class LivingEntity extends Entity {
+@@ -3380,8 +3380,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
              this.noJumpDelay = 0;
          }
  
--        this.level.getProfiler().pop();
--        this.level.getProfiler().push("travel");
+-        this.level().getProfiler().pop();
+-        this.level().getProfiler().push("travel");
 +        // HoloCons - remove profiler
 +        // HoloCons - remove profiler
          this.xxa *= 0.98F;
          this.zza *= 0.98F;
          this.updateFallFlying();
-@@ -3401,8 +3401,8 @@ public abstract class LivingEntity extends Entity {
-         // SpigotTimings.timerEntityAIMove.startTiming(); // Spigot // Paper
-         this.travel(new Vec3((double) this.xxa, (double) this.yya, (double) this.zza));
-         // SpigotTimings.timerEntityAIMove.stopTiming(); // Spigot // Paper
--        this.level.getProfiler().pop();
--        this.level.getProfiler().push("freezing");
-+        // HoloCons - remove profiler
-+        // HoloCons - remove profiler
-         boolean flag1 = this.getType().is(EntityTypeTags.FREEZE_HURTS_EXTRA_TYPES);
-         int i;
- 
-@@ -3422,15 +3422,15 @@ public abstract class LivingEntity extends Entity {
-             this.hurt(DamageSource.FREEZE, (float) i);
+@@ -3408,8 +3408,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
+             this.travel(vec3d1);
          }
  
--        this.level.getProfiler().pop();
--        this.level.getProfiler().push("push");
+-        this.level().getProfiler().pop();
+-        this.level().getProfiler().push("freezing");
++        // HoloCons - remove profiler
++        // HoloCons - remove profiler
+         if (!this.level().isClientSide && !this.isDeadOrDying() && !freezeLocked) { // Paper - Freeze Tick Lock API
+             int i = this.getTicksFrozen();
+ 
+@@ -3426,15 +3426,15 @@ public abstract class LivingEntity extends Entity implements Attackable {
+             this.hurt(this.damageSources().freeze(), 1.0F);
+         }
+ 
+-        this.level().getProfiler().pop();
+-        this.level().getProfiler().push("push");
 +        // HoloCons - remove profiler
 +        // HoloCons - remove profiler
          if (this.autoSpinAttackTicks > 0) {
@@ -1211,106 +1229,106 @@ index 42eb78830855d7282b7f3f1bdbe85e632d489784..ac8f95345582f6a8e930626b7da50629
          }
  
          this.pushEntities();
--        this.level.getProfiler().pop();
+-        this.level().getProfiler().pop();
 +        // HoloCons - remove profiler
          // Paper start
-         if (((ServerLevel) this.level).hasEntityMoveEvent && !(this instanceof net.minecraft.world.entity.player.Player)) {
-             if (this.xo != getX() || this.yo != this.getY() || this.zo != this.getZ() || this.yRotO != this.getYRot() || this.xRotO != this.getXRot()) {
+         if (((ServerLevel) this.level()).hasEntityMoveEvent && !(this instanceof net.minecraft.world.entity.player.Player)) {
+             if (this.xo != this.getX() || this.yo != this.getY() || this.zo != this.getZ() || this.yRotO != this.getYRot() || this.xRotO != this.getXRot()) {
 diff --git a/src/main/java/net/minecraft/world/entity/Mob.java b/src/main/java/net/minecraft/world/entity/Mob.java
-index 49b983064ea810382b6112f5dc7f93ba4e5710bd..b178f94cd07c67eb349ff321287e4f20b1fcbdad 100644
+index e2a25c29ec74147b3e66aa0b3deb85a8f6ee53a5..29f6c6d9bbb9d97982b9bc750bb962f7ac020efe 100644
 --- a/src/main/java/net/minecraft/world/entity/Mob.java
 +++ b/src/main/java/net/minecraft/world/entity/Mob.java
-@@ -327,13 +327,13 @@ public abstract class Mob extends LivingEntity {
+@@ -360,13 +360,13 @@ public abstract class Mob extends LivingEntity implements Targeting {
      @Override
      public void baseTick() {
          super.baseTick();
--        this.level.getProfiler().push("mobBaseTick");
+-        this.level().getProfiler().push("mobBaseTick");
 +        // HoloCons - remove profiler
          if (this.isAlive() && this.random.nextInt(1000) < this.ambientSoundTime++) {
              this.resetAmbientSoundTime();
              this.playAmbientSound();
          }
  
--        this.level.getProfiler().pop();
+-        this.level().getProfiler().pop();
 +        // HoloCons - remove profiler
      }
  
      @Override
-@@ -638,7 +638,7 @@ public abstract class Mob extends LivingEntity {
+@@ -671,7 +671,7 @@ public abstract class Mob extends LivingEntity implements Targeting {
      @Override
      public void aiStep() {
          super.aiStep();
--        this.level.getProfiler().push("looting");
+-        this.level().getProfiler().push("looting");
 +        // HoloCons - remove profiler
-         if (!this.level.isClientSide && this.canPickUpLoot() && this.isAlive() && !this.dead && this.level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
+         if (!this.level().isClientSide && this.canPickUpLoot() && this.isAlive() && !this.dead && this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
              Vec3i baseblockposition = this.getPickupReach();
-             List<ItemEntity> list = this.level.getEntitiesOfClass(ItemEntity.class, this.getBoundingBox().inflate((double) baseblockposition.getX(), (double) baseblockposition.getY(), (double) baseblockposition.getZ()));
-@@ -658,7 +658,7 @@ public abstract class Mob extends LivingEntity {
+             List<ItemEntity> list = this.level().getEntitiesOfClass(ItemEntity.class, this.getBoundingBox().inflate((double) baseblockposition.getX(), (double) baseblockposition.getY(), (double) baseblockposition.getZ()));
+@@ -691,7 +691,7 @@ public abstract class Mob extends LivingEntity implements Targeting {
              }
          }
  
--        this.level.getProfiler().pop();
+-        this.level().getProfiler().pop();
 +        // HoloCons - remove profiler
      }
  
      protected Vec3i getPickupReach() {
-@@ -871,42 +871,42 @@ public abstract class Mob extends LivingEntity {
+@@ -903,42 +903,42 @@ public abstract class Mob extends LivingEntity implements Targeting {
              return;
          }
          // Paper end
--        this.level.getProfiler().push("sensing");
+-        this.level().getProfiler().push("sensing");
 +        // HoloCons - remove profiler
          this.sensing.tick();
--        this.level.getProfiler().pop();
+-        this.level().getProfiler().pop();
 +        // HoloCons - remove profiler
-         int i = this.level.getServer().getTickCount() + this.getId();
+         int i = this.level().getServer().getTickCount() + this.getId();
  
          if (i % 2 != 0 && this.tickCount > 1) {
--            this.level.getProfiler().push("targetSelector");
+-            this.level().getProfiler().push("targetSelector");
 +            // HoloCons - remove profiler
              this.targetSelector.tickRunningGoals(false);
--            this.level.getProfiler().pop();
--            this.level.getProfiler().push("goalSelector");
+-            this.level().getProfiler().pop();
+-            this.level().getProfiler().push("goalSelector");
 +            // HoloCons - remove profiler
 +            // HoloCons - remove profiler
              this.goalSelector.tickRunningGoals(false);
--            this.level.getProfiler().pop();
+-            this.level().getProfiler().pop();
 +            // HoloCons - remove profiler
          } else {
--            this.level.getProfiler().push("targetSelector");
+-            this.level().getProfiler().push("targetSelector");
 +            // HoloCons - remove profiler
              this.targetSelector.tick();
--            this.level.getProfiler().pop();
--            this.level.getProfiler().push("goalSelector");
+-            this.level().getProfiler().pop();
+-            this.level().getProfiler().push("goalSelector");
 +            // HoloCons - remove profiler
 +            // HoloCons - remove profiler
              this.goalSelector.tick();
--            this.level.getProfiler().pop();
+-            this.level().getProfiler().pop();
 +            // HoloCons - remove profiler
          }
  
--        this.level.getProfiler().push("navigation");
+-        this.level().getProfiler().push("navigation");
 +        // HoloCons - remove profiler
          this.navigation.tick();
--        this.level.getProfiler().pop();
--        this.level.getProfiler().push("mob tick");
+-        this.level().getProfiler().pop();
+-        this.level().getProfiler().push("mob tick");
 +        // HoloCons - remove profiler
 +        // HoloCons - remove profiler
          this.customServerAiStep();
--        this.level.getProfiler().pop();
-+        /*this.level.getProfiler().pop(); // HoloCons - remove profiler
-         this.level.getProfiler().push("controls");
--        this.level.getProfiler().push("move");
-+        this.level.getProfiler().push("move");*/ // HoloCons - remove profiler
+-        this.level().getProfiler().pop();
++        /*this.level().getProfiler().pop(); // HoloCons - remove profiler
+         this.level().getProfiler().push("controls");
+-        this.level().getProfiler().push("move");
++        this.level().getProfiler().push("move");*/ // HoloCons - remove profiler
          this.moveControl.tick();
--        this.level.getProfiler().popPush("look");
+-        this.level().getProfiler().popPush("look");
 +        // HoloCons - remove profiler
          this.lookControl.tick();
--        this.level.getProfiler().popPush("jump");
+-        this.level().getProfiler().popPush("jump");
 +        // HoloCons - remove profiler
          this.jumpControl.tick();
--        this.level.getProfiler().pop();
--        this.level.getProfiler().pop();
+-        this.level().getProfiler().pop();
+-        this.level().getProfiler().pop();
 +        // HoloCons - remove profiler
 +        // HoloCons - remove profiler
          this.sendDebugPackets();
@@ -1369,10 +1387,10 @@ index b738ee2d3801fadfd09313f05ae24593e56b0ec6..6d6cdb8e3f627c6e7ee291d9bceb0754
  
      public Set<WrappedGoal> getAvailableGoals() {
 diff --git a/src/main/java/net/minecraft/world/entity/ai/navigation/PathNavigation.java b/src/main/java/net/minecraft/world/entity/ai/navigation/PathNavigation.java
-index 97257b450e848f53fdb9b5b7affa57b03ea5f459..c41bc9c4f55c2fdceee0994ff36cff4d1e9afb9f 100644
+index b376670d11088e524ce246f667e580e90cd119a3..844fd361ae31e4838bcac0b40a49302f1cd1dc1d 100644
 --- a/src/main/java/net/minecraft/world/entity/ai/navigation/PathNavigation.java
 +++ b/src/main/java/net/minecraft/world/entity/ai/navigation/PathNavigation.java
-@@ -171,12 +171,12 @@ public abstract class PathNavigation {
+@@ -172,12 +172,12 @@ public abstract class PathNavigation {
                  }
              }
              // Paper end
@@ -1388,249 +1406,268 @@ index 97257b450e848f53fdb9b5b7affa57b03ea5f459..c41bc9c4f55c2fdceee0994ff36cff4d
                  this.targetPos = path.getTarget();
                  this.reachRange = distance;
 diff --git a/src/main/java/net/minecraft/world/entity/ai/sensing/Sensing.java b/src/main/java/net/minecraft/world/entity/ai/sensing/Sensing.java
-index 288c6627906d07c0d223eacd84ae4eb31a349998..cc37fcd5cecadc27b780b0d1bf7f460ab327e2d2 100644
+index 51772f03a3469b11e7166ec6f3a1b9c64a606221..cc37fcd5cecadc27b780b0d1bf7f460ab327e2d2 100644
 --- a/src/main/java/net/minecraft/world/entity/ai/sensing/Sensing.java
 +++ b/src/main/java/net/minecraft/world/entity/ai/sensing/Sensing.java
 @@ -26,9 +26,9 @@ public class Sensing {
          } else if (this.unseen.contains(i)) {
              return false;
          } else {
--            this.mob.level.getProfiler().push("hasLineOfSight");
+-            this.mob.level().getProfiler().push("hasLineOfSight");
 +            // HoloCons - remove profiler
              boolean bl = this.mob.hasLineOfSight(entity);
--            this.mob.level.getProfiler().pop();
+-            this.mob.level().getProfiler().pop();
 +            // HoloCons - remove profiler
              if (bl) {
                  this.seen.add(i);
              } else {
 diff --git a/src/main/java/net/minecraft/world/entity/animal/allay/Allay.java b/src/main/java/net/minecraft/world/entity/animal/allay/Allay.java
-index c0084b1f146a4697194c421519537e612ff737c0..5506ad1395ea8093fcad0434adc8c7c939e5593e 100644
+index 339c70f101d026a100a801e66cf514b3329a89d2..5f44d5f6761d213e6e8a3329ec52d8b4fe1da65f 100644
 --- a/src/main/java/net/minecraft/world/entity/animal/allay/Allay.java
 +++ b/src/main/java/net/minecraft/world/entity/animal/allay/Allay.java
-@@ -230,12 +230,12 @@ public class Allay extends PathfinderMob implements InventoryCarrier {
+@@ -224,12 +224,12 @@ public class Allay extends PathfinderMob implements InventoryCarrier, VibrationS
  
      @Override
      protected void customServerAiStep() {
--        this.level.getProfiler().push("allayBrain");
+-        this.level().getProfiler().push("allayBrain");
 +        // HoloCons - remove profiler
-         this.getBrain().tick((ServerLevel) this.level, this);
--        this.level.getProfiler().pop();
--        this.level.getProfiler().push("allayActivityUpdate");
+         this.getBrain().tick((ServerLevel) this.level(), this);
+-        this.level().getProfiler().pop();
+-        this.level().getProfiler().push("allayActivityUpdate");
 +        // HoloCons - remove profiler
 +        // HoloCons - remove profiler
          AllayAi.updateActivity(this);
--        this.level.getProfiler().pop();
+-        this.level().getProfiler().pop();
 +        // HoloCons - remove profiler
          super.customServerAiStep();
      }
  
 diff --git a/src/main/java/net/minecraft/world/entity/animal/axolotl/Axolotl.java b/src/main/java/net/minecraft/world/entity/animal/axolotl/Axolotl.java
-index 0d7f951e3837de7553d93f3d4525276048feb405..f7aa28e6d87660a7a7bbd31a4d2dfb963fb0019f 100644
+index 2682a49cd3948e0f80e2d7e58abcd3e6d8f7ac4e..e1706dd3e06540ce5e6d8099037eab70aa8453de 100644
 --- a/src/main/java/net/minecraft/world/entity/animal/axolotl/Axolotl.java
 +++ b/src/main/java/net/minecraft/world/entity/animal/axolotl/Axolotl.java
 @@ -287,12 +287,12 @@ public class Axolotl extends Animal implements LerpingModel, VariantHolder<Axolo
  
      @Override
      protected void customServerAiStep() {
--        this.level.getProfiler().push("axolotlBrain");
+-        this.level().getProfiler().push("axolotlBrain");
 +        // HoloCons - remove profiler
-         this.getBrain().tick((ServerLevel) this.level, this);
--        this.level.getProfiler().pop();
--        this.level.getProfiler().push("axolotlActivityUpdate");
+         this.getBrain().tick((ServerLevel) this.level(), this);
+-        this.level().getProfiler().pop();
+-        this.level().getProfiler().push("axolotlActivityUpdate");
 +        // HoloCons - remove profiler
 +        // HoloCons - remove profiler
          AxolotlAi.updateActivity(this);
--        this.level.getProfiler().pop();
+-        this.level().getProfiler().pop();
 +        // HoloCons - remove profiler
          if (!this.isNoAi()) {
              Optional<Integer> optional = this.getBrain().getMemory(MemoryModuleType.PLAY_DEAD_TICKS);
  
 diff --git a/src/main/java/net/minecraft/world/entity/animal/camel/Camel.java b/src/main/java/net/minecraft/world/entity/animal/camel/Camel.java
-index d9104d996c854cce1ff167706c93747cd69c3969..ec1c27d9f3a30eb85380c946f516ab2e097928c9 100644
+index 4efa7e331cc974008c653a04687a336e97626445..2dc2c79e64209ea4547269a007c73d95222a79b4 100644
 --- a/src/main/java/net/minecraft/world/entity/animal/camel/Camel.java
 +++ b/src/main/java/net/minecraft/world/entity/animal/camel/Camel.java
-@@ -146,13 +146,13 @@ public class Camel extends AbstractHorse implements PlayerRideableJumping, Rider
+@@ -150,13 +150,13 @@ public class Camel extends AbstractHorse implements PlayerRideableJumping, Rider
  
      @Override
      protected void customServerAiStep() {
--        this.level.getProfiler().push("camelBrain");
+-        this.level().getProfiler().push("camelBrain");
 +        // HoloCons - remove profiler
          Brain<Camel> brain = (Brain<Camel>) this.getBrain(); // Paper - decompile fix
-         brain.tick((ServerLevel)this.level, this);
--        this.level.getProfiler().pop();
--        this.level.getProfiler().push("camelActivityUpdate");
+         brain.tick((ServerLevel)this.level(), this);
+-        this.level().getProfiler().pop();
+-        this.level().getProfiler().push("camelActivityUpdate");
 +        // HoloCons - remove profiler
 +        // HoloCons - remove profiler
          CamelAi.updateActivity(this);
--        this.level.getProfiler().pop();
+-        this.level().getProfiler().pop();
 +        // HoloCons - remove profiler
          super.customServerAiStep();
      }
  
 diff --git a/src/main/java/net/minecraft/world/entity/animal/frog/Frog.java b/src/main/java/net/minecraft/world/entity/animal/frog/Frog.java
-index 63cb093e41ef9eed43c8bbb758596f8df324f47f..a6cd61413d1c48eca2d73c9a892ff9a37ab65fd4 100644
+index 203691417e208b9e023e5f8c3b76993db2747ba8..20f073d08520bc2f9f1e639bc24870cf1ad59bcc 100644
 --- a/src/main/java/net/minecraft/world/entity/animal/frog/Frog.java
 +++ b/src/main/java/net/minecraft/world/entity/animal/frog/Frog.java
-@@ -179,12 +179,12 @@ public class Frog extends Animal implements VariantHolder<FrogVariant> {
+@@ -164,12 +164,12 @@ public class Frog extends Animal implements VariantHolder<FrogVariant> {
  
      @Override
      protected void customServerAiStep() {
--        this.level.getProfiler().push("frogBrain");
+-        this.level().getProfiler().push("frogBrain");
 +        // HoloCons - remove profiler
-         this.getBrain().tick((ServerLevel)this.level, this);
--        this.level.getProfiler().pop();
--        this.level.getProfiler().push("frogActivityUpdate");
+         this.getBrain().tick((ServerLevel)this.level(), this);
+-        this.level().getProfiler().pop();
+-        this.level().getProfiler().push("frogActivityUpdate");
 +        // HoloCons - remove profiler
 +        // HoloCons - remove profiler
          FrogAi.updateActivity(this);
--        this.level.getProfiler().pop();
+-        this.level().getProfiler().pop();
 +        // HoloCons - remove profiler
          super.customServerAiStep();
      }
  
 diff --git a/src/main/java/net/minecraft/world/entity/animal/frog/Tadpole.java b/src/main/java/net/minecraft/world/entity/animal/frog/Tadpole.java
-index 9058f9f2e561cda9f475f33218bf7a78297de4bc..9b880493f3afa085719705ae9170eb068fba2217 100644
+index 4aeab90e778629c355189dfe79c39c4b21f5f5ac..feddd2618a0948bf3c805bef52b3af19006555c9 100644
 --- a/src/main/java/net/minecraft/world/entity/animal/frog/Tadpole.java
 +++ b/src/main/java/net/minecraft/world/entity/animal/frog/Tadpole.java
 @@ -79,12 +79,12 @@ public class Tadpole extends AbstractFish {
  
      @Override
      protected void customServerAiStep() {
--        this.level.getProfiler().push("tadpoleBrain");
+-        this.level().getProfiler().push("tadpoleBrain");
 +        // HoloCons - remove profiler
-         this.getBrain().tick((ServerLevel) this.level, this);
--        this.level.getProfiler().pop();
--        this.level.getProfiler().push("tadpoleActivityUpdate");
+         this.getBrain().tick((ServerLevel) this.level(), this);
+-        this.level().getProfiler().pop();
+-        this.level().getProfiler().push("tadpoleActivityUpdate");
 +        // HoloCons - remove profiler
 +        // HoloCons - remove profiler
          TadpoleAi.updateActivity(this);
--        this.level.getProfiler().pop();
+-        this.level().getProfiler().pop();
 +        // HoloCons - remove profiler
          super.customServerAiStep();
      }
  
 diff --git a/src/main/java/net/minecraft/world/entity/animal/goat/Goat.java b/src/main/java/net/minecraft/world/entity/animal/goat/Goat.java
-index e9f7c08ae3ea9c578971b1ede88788572c20e277..6c35111ecffa82afd8d3e496cb19a93674d15696 100644
+index 247aca0b612f5079a0596350e8311c385df8ab1c..ab8c0f2d62f481c7b99a733bfc93e85b69661267 100644
 --- a/src/main/java/net/minecraft/world/entity/animal/goat/Goat.java
 +++ b/src/main/java/net/minecraft/world/entity/animal/goat/Goat.java
-@@ -190,12 +190,12 @@ public class Goat extends Animal {
+@@ -191,12 +191,12 @@ public class Goat extends Animal {
  
      @Override
      protected void customServerAiStep() {
--        this.level.getProfiler().push("goatBrain");
+-        this.level().getProfiler().push("goatBrain");
 +        // HoloCons - remove profiler
-         this.getBrain().tick((ServerLevel) this.level, this);
--        this.level.getProfiler().pop();
--        this.level.getProfiler().push("goatActivityUpdate");
+         this.getBrain().tick((ServerLevel) this.level(), this);
+-        this.level().getProfiler().pop();
+-        this.level().getProfiler().push("goatActivityUpdate");
 +        // HoloCons - remove profiler
 +        // HoloCons - remove profiler
          GoatAi.updateActivity(this);
--        this.level.getProfiler().pop();
+-        this.level().getProfiler().pop();
++        // HoloCons - remove profiler
+         super.customServerAiStep();
+     }
+ 
+diff --git a/src/main/java/net/minecraft/world/entity/animal/sniffer/Sniffer.java b/src/main/java/net/minecraft/world/entity/animal/sniffer/Sniffer.java
+index a6d98f64910c816a5c11867d12698f5cd63c751a..bb4ee2eb03cc5da2172b227d106afc77bdee1146 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/sniffer/Sniffer.java
++++ b/src/main/java/net/minecraft/world/entity/animal/sniffer/Sniffer.java
+@@ -492,11 +492,11 @@ public class Sniffer extends Animal {
+ 
+     @Override
+     protected void customServerAiStep() {
+-        this.level().getProfiler().push("snifferBrain");
++        // HoloCons - remove profiler
+         this.getBrain().tick((ServerLevel) this.level(), this);
+-        this.level().getProfiler().popPush("snifferActivityUpdate");
++        // HoloCons - remove profiler
+         SnifferAi.updateActivity(this);
+-        this.level().getProfiler().pop();
 +        // HoloCons - remove profiler
          super.customServerAiStep();
      }
  
 diff --git a/src/main/java/net/minecraft/world/entity/monster/Zoglin.java b/src/main/java/net/minecraft/world/entity/monster/Zoglin.java
-index dd26d7b7fcae0bdab43a9b51c09011e7db761787..b92cdc18a2cbc5ab4d46df7cb986b265b7ffa845 100644
+index 539a411de905a6c936a0af1d16220df595fdef79..d64e60a1e111d0bf3e1a92015542e30fa0de206b 100644
 --- a/src/main/java/net/minecraft/world/entity/monster/Zoglin.java
 +++ b/src/main/java/net/minecraft/world/entity/monster/Zoglin.java
 @@ -198,9 +198,9 @@ public class Zoglin extends Monster implements Enemy, HoglinBase {
  
      @Override
      protected void customServerAiStep() {
--        this.level.getProfiler().push("zoglinBrain");
+-        this.level().getProfiler().push("zoglinBrain");
 +        // HoloCons - remove profiler
-         this.getBrain().tick((ServerLevel)this.level, this);
--        this.level.getProfiler().pop();
+         this.getBrain().tick((ServerLevel)this.level(), this);
+-        this.level().getProfiler().pop();
 +        // HoloCons - remove profiler
          this.updateActivity();
      }
  
 diff --git a/src/main/java/net/minecraft/world/entity/monster/hoglin/Hoglin.java b/src/main/java/net/minecraft/world/entity/monster/hoglin/Hoglin.java
-index 5d3b3cb3a882eb5d716f678095a65b28d0967476..4052d74e2347d6222bb6c5038e23d7960da2a502 100644
+index e8f6c34ea789136d63c0aa88aec90203ef6282b5..1ca70bb7fcc96d43157d14d9cfeb13e2be9ac56f 100644
 --- a/src/main/java/net/minecraft/world/entity/monster/hoglin/Hoglin.java
 +++ b/src/main/java/net/minecraft/world/entity/monster/hoglin/Hoglin.java
 @@ -128,9 +128,9 @@ public class Hoglin extends Animal implements Enemy, HoglinBase {
  
      @Override
      protected void customServerAiStep() {
--        this.level.getProfiler().push("hoglinBrain");
+-        this.level().getProfiler().push("hoglinBrain");
 +        // HoloCons - remove profiler
-         this.getBrain().tick((ServerLevel)this.level, this);
--        this.level.getProfiler().pop();
+         this.getBrain().tick((ServerLevel)this.level(), this);
+-        this.level().getProfiler().pop();
 +        // HoloCons - remove profiler
          HoglinAi.updateActivity(this);
          if (this.isConverting()) {
              ++this.timeInOverworld;
 diff --git a/src/main/java/net/minecraft/world/entity/monster/piglin/Piglin.java b/src/main/java/net/minecraft/world/entity/monster/piglin/Piglin.java
-index afa7ecfa8453da510ec5ccecb1ceeb1d9893d259..7a46f45b61186e271bd07269191c53f4b14916fe 100644
+index 27d9145693a772cd1b5d171da303c934101f3be8..1d5905f0e02a879e69e9f8fc2d7a89e47966fb2c 100644
 --- a/src/main/java/net/minecraft/world/entity/monster/piglin/Piglin.java
 +++ b/src/main/java/net/minecraft/world/entity/monster/piglin/Piglin.java
-@@ -310,9 +310,9 @@ public class Piglin extends AbstractPiglin implements CrossbowAttackMob, Invento
+@@ -307,9 +307,9 @@ public class Piglin extends AbstractPiglin implements CrossbowAttackMob, Invento
  
      @Override
      protected void customServerAiStep() {
--        this.level.getProfiler().push("piglinBrain");
+-        this.level().getProfiler().push("piglinBrain");
 +        // HoloCons - remove profiler
-         this.getBrain().tick((ServerLevel) this.level, this);
--        this.level.getProfiler().pop();
+         this.getBrain().tick((ServerLevel) this.level(), this);
+-        this.level().getProfiler().pop();
 +        // HoloCons - remove profiler
          PiglinAi.updateActivity(this);
          super.customServerAiStep();
      }
 diff --git a/src/main/java/net/minecraft/world/entity/monster/piglin/PiglinBrute.java b/src/main/java/net/minecraft/world/entity/monster/piglin/PiglinBrute.java
-index a1fbeec73fbd11915a276ccbf490ee9b7441b6dc..9f8d0856639c34176d0c66d42812b8c34c4df00f 100644
+index f2611015786db9c5fd44ee7fed2f15c7209ef622..3a8239a1eb6c7cff726b662982af5dabb1e4a51f 100644
 --- a/src/main/java/net/minecraft/world/entity/monster/piglin/PiglinBrute.java
 +++ b/src/main/java/net/minecraft/world/entity/monster/piglin/PiglinBrute.java
 @@ -85,9 +85,9 @@ public class PiglinBrute extends AbstractPiglin {
  
      @Override
      protected void customServerAiStep() {
--        this.level.getProfiler().push("piglinBruteBrain");
+-        this.level().getProfiler().push("piglinBruteBrain");
 +        // HoloCons - remove profiler
-         this.getBrain().tick((ServerLevel)this.level, this);
--        this.level.getProfiler().pop();
+         this.getBrain().tick((ServerLevel)this.level(), this);
+-        this.level().getProfiler().pop();
 +        // HoloCons - remove profiler
          PiglinBruteAi.updateActivity(this);
          PiglinBruteAi.maybePlayActivitySound(this);
          super.customServerAiStep();
 diff --git a/src/main/java/net/minecraft/world/entity/monster/warden/Warden.java b/src/main/java/net/minecraft/world/entity/monster/warden/Warden.java
-index 1ae7408048f951cb94d7cfbea60efc5567b1af84..61e0dfbc66ac3922ac68609fbeadd4f781b829c3 100644
+index 97b763431bc5015448ee7a26a340635a932c950b..42b25da9a51cf67f175baedc02b340a74ef24976 100644
 --- a/src/main/java/net/minecraft/world/entity/monster/warden/Warden.java
 +++ b/src/main/java/net/minecraft/world/entity/monster/warden/Warden.java
-@@ -274,9 +274,9 @@ public class Warden extends Monster implements VibrationListener.VibrationListen
+@@ -275,9 +275,9 @@ public class Warden extends Monster implements VibrationSystem {
      protected void customServerAiStep() {
-         ServerLevel worldserver = (ServerLevel) this.level;
+         ServerLevel worldserver = (ServerLevel) this.level();
  
 -        worldserver.getProfiler().push("wardenBrain");
 +        // HoloCons - remove profiler
          this.getBrain().tick(worldserver, this);
--        this.level.getProfiler().pop();
+-        this.level().getProfiler().pop();
 +        // HoloCons - remove profiler
          super.customServerAiStep();
          if ((this.tickCount + this.getId()) % 120 == 0) {
              Warden.applyDarknessAround(worldserver, this.position(), this, 20);
 diff --git a/src/main/java/net/minecraft/world/entity/npc/Villager.java b/src/main/java/net/minecraft/world/entity/npc/Villager.java
-index 18eac340386a396c9850f53f30d20a41c1437788..621d9f954001cfeb5bd9f2b7dc2fa3ccce786f5a 100644
+index e30d5ae3e2900f43d7cafde71b8196f26e872841..a54630d44e281588107f767e04703b04d1d982c6 100644
 --- a/src/main/java/net/minecraft/world/entity/npc/Villager.java
 +++ b/src/main/java/net/minecraft/world/entity/npc/Villager.java
-@@ -246,9 +246,9 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
-     @Override
-     protected void customServerAiStep() { mobTick(false); }
-     protected void mobTick(boolean inactive) {
--        this.level.getProfiler().push("villagerBrain");
+@@ -252,9 +252,9 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+     }
+     protected void customServerAiStep(final boolean inactive) {
+         // Paper end
+-        this.level().getProfiler().push("villagerBrain");
 +        // HoloCons - remove profiler
-         if (!inactive) this.getBrain().tick((ServerLevel) this.level, this); // Paper
--        this.level.getProfiler().pop();
+         if (!inactive) this.getBrain().tick((ServerLevel) this.level(), this); // Paper
+-        this.level().getProfiler().pop();
 +        // HoloCons - remove profiler
          if (this.assignProfessionWhenSpawned) {
              this.assignProfessionWhenSpawned = false;
          }
 diff --git a/src/main/java/net/minecraft/world/level/Explosion.java b/src/main/java/net/minecraft/world/level/Explosion.java
-index 5ef6b5ad4dd69a57595914c7af8422ee2f6ad054..bc53270d53fb8e186ec4d0fe4c32787c926b71f2 100644
+index 8f97c9df726ac20cfce7bdddd5dd4f8c5aa76c35..e52d7483b7339e46263298ed169290449361087e 100644
 --- a/src/main/java/net/minecraft/world/level/Explosion.java
 +++ b/src/main/java/net/minecraft/world/level/Explosion.java
-@@ -363,7 +363,7 @@ public class Explosion {
+@@ -382,7 +382,7 @@ public class Explosion {
                  if (!iblockdata.isAir() && iblockdata.isDestroyable()) { // Paper
                      BlockPos blockposition1 = blockposition.immutable();
  
@@ -1639,7 +1676,7 @@ index 5ef6b5ad4dd69a57595914c7af8422ee2f6ad054..bc53270d53fb8e186ec4d0fe4c32787c
                      if (block.dropFromExplosion(this)) {
                          Level world = this.level;
  
-@@ -385,7 +385,7 @@ public class Explosion {
+@@ -404,7 +404,7 @@ public class Explosion {
  
                      this.level.setBlock(blockposition, Blocks.AIR.defaultBlockState(), 3);
                      block.wasExploded(this.level, blockposition, this);
@@ -1649,21 +1686,9 @@ index 5ef6b5ad4dd69a57595914c7af8422ee2f6ad054..bc53270d53fb8e186ec4d0fe4c32787c
              }
  
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 848dd632cdab93cc41fb2187f56c77dabf82c120..db4de8abbbc31543a689c12a2fcbae41e9e7c8a1 100644
+index 3091e55ae0f17ba1e8bfe547b4415d8eed31d8dd..ed42971d85cbe22e6545345c1624ee00c637357d 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -563,9 +563,9 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
-                 BlockState iblockdata2 = this.getBlockState(pos);
- 
-                 if ((flags & 128) == 0 && iblockdata2 != iblockdata1 && (iblockdata2.getLightBlock(this, pos) != iblockdata1.getLightBlock(this, pos) || iblockdata2.getLightEmission() != iblockdata1.getLightEmission() || iblockdata2.useShapeForLightOcclusion() || iblockdata1.useShapeForLightOcclusion())) {
--                    this.getProfiler().push("queueCheckLight");
-+                    // HoloCons - remove profiler
-                     this.getChunkSource().getLightEngine().checkBlock(pos);
--                    this.getProfiler().pop();
-+                    // HoloCons - remove profiler
-                 }
- 
-                 /*
 @@ -864,9 +864,9 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
      }
  
@@ -1703,7 +1728,7 @@ index 848dd632cdab93cc41fb2187f56c77dabf82c120..db4de8abbbc31543a689c12a2fcbae41
          // Paper start - optimise this call
          //TODO use limit
          if (filter instanceof net.minecraft.world.entity.EntityType entityTypeTest) {
-@@ -1452,7 +1452,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -1380,7 +1380,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
      }
  
      public ProfilerFiller getProfiler() {
@@ -1713,7 +1738,7 @@ index 848dd632cdab93cc41fb2187f56c77dabf82c120..db4de8abbbc31543a689c12a2fcbae41
  
      public Supplier<ProfilerFiller> getProfilerSupplier() {
 diff --git a/src/main/java/net/minecraft/world/level/NaturalSpawner.java b/src/main/java/net/minecraft/world/level/NaturalSpawner.java
-index b01b19f3bbf30fa695e1e3871a19199a76454c62..a36b2ab82af844cf8fc7371b0198244018b7d236 100644
+index d8b1e39184aff3a22d5ec024afc40e4bb671d0a7..3d48ad9b5e90e5dac64bf9faf292cca76a464710 100644
 --- a/src/main/java/net/minecraft/world/level/NaturalSpawner.java
 +++ b/src/main/java/net/minecraft/world/level/NaturalSpawner.java
 @@ -132,7 +132,7 @@ public final class NaturalSpawner {
@@ -1735,10 +1760,10 @@ index b01b19f3bbf30fa695e1e3871a19199a76454c62..a36b2ab82af844cf8fc7371b01982440
  
      // Paper start
 diff --git a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
-index afe23d54bf7284fb1b171ce1a86e4247b30db8ae..5810aae8aac9c368b2e22ee2bc0e081b1f91be6e 100644
+index 62da5b7ea84ad4e7f7b292a7a813fabd3f6bea08..9a8fbf20c4a3033183c5a8952a4969a6dfe17e87 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
-@@ -1294,9 +1294,9 @@ public class LevelChunk extends ChunkAccess {
+@@ -1256,9 +1256,9 @@ public class LevelChunk extends ChunkAccess {
  
                  if (LevelChunk.this.isTicking(blockposition)) {
                      try {
@@ -1750,7 +1775,7 @@ index afe23d54bf7284fb1b171ce1a86e4247b30db8ae..5810aae8aac9c368b2e22ee2bc0e081b
                          // Spigot // HoloCons - remove timings
                          BlockState iblockdata = LevelChunk.this.getBlockState(blockposition);
  
-@@ -1308,7 +1308,7 @@ public class LevelChunk extends ChunkAccess {
+@@ -1270,7 +1270,7 @@ public class LevelChunk extends ChunkAccess {
                              LevelChunk.LOGGER.warn("Block entity {} @ {} state {} invalid for ticking:", new Object[]{LogUtils.defer(this::getType), LogUtils.defer(this::getPos), iblockdata});
                          }
  
@@ -1775,7 +1800,7 @@ index d23481453717f715124156b5d83f6448f720d049..afff530b97aefbbda2807ad35babe1f0
          startNode.g = 0.0F;
          startNode.h = this.getBestH(startNode, positions); // Paper - optimize collection
 diff --git a/src/main/java/net/minecraft/world/ticks/LevelTicks.java b/src/main/java/net/minecraft/world/ticks/LevelTicks.java
-index 7f1ac2cb29eb84833c0895442d611dfa0504527e..1eacf0cdf011d8feaaf71afbef3cac3dc21d7b3a 100644
+index 1d7c663fa0e550bd0cfb9a4b83ccd7e2968666f0..a30abddc5543a7028343062c7f7336823306755e 100644
 --- a/src/main/java/net/minecraft/world/ticks/LevelTicks.java
 +++ b/src/main/java/net/minecraft/world/ticks/LevelTicks.java
 @@ -86,20 +86,20 @@ public class LevelTicks<T> implements LevelTickAccess<T> {

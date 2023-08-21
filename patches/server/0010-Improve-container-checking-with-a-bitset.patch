@@ -25,10 +25,10 @@ index 241fec02e6869c638d3a160819b32173a081467b..a94617e20a05baac90ec22e74f39c1fa
 +    // HoloCons end
  }
 diff --git a/src/main/java/net/minecraft/world/Container.java b/src/main/java/net/minecraft/world/Container.java
-index 540bc9500c35c0db719b00aa26f6fb3a1b08ed9f..ce2bbb246a89667c7bea19af67190a6d0b23be0a 100644
+index 04b1531572e8fff1e46fe1c94e7fc863841e0f66..10d3a4b7d8c8cb54eb1a68c1e55d47495412fbe7 100644
 --- a/src/main/java/net/minecraft/world/Container.java
 +++ b/src/main/java/net/minecraft/world/Container.java
-@@ -95,4 +95,26 @@ public interface Container extends Clearable {
+@@ -114,4 +114,26 @@ public interface Container extends Clearable {
  
      int MAX_STACK = 64;
      // CraftBukkit end
@@ -56,7 +56,7 @@ index 540bc9500c35c0db719b00aa26f6fb3a1b08ed9f..ce2bbb246a89667c7bea19af67190a6d
 +    // HoloCons end
  }
 diff --git a/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecartContainer.java b/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecartContainer.java
-index cc74eeb45913fab03e85969957215d2811252a83..7cb36d2087c2983e675d0b87d681dc303203b270 100644
+index 272095d7a09ab41227d741172735f66fd2798ce1..7e4154a1ec120b709330c4c22ee75302744324a4 100644
 --- a/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecartContainer.java
 +++ b/src/main/java/net/minecraft/world/entity/vehicle/AbstractMinecartContainer.java
 @@ -27,7 +27,7 @@ import org.bukkit.inventory.InventoryHolder;
@@ -103,7 +103,7 @@ index cc74eeb45913fab03e85969957215d2811252a83..7cb36d2087c2983e675d0b87d681dc30
 +    // HoloCons end
  }
 diff --git a/src/main/java/net/minecraft/world/entity/vehicle/ChestBoat.java b/src/main/java/net/minecraft/world/entity/vehicle/ChestBoat.java
-index a99e2586962952332dd9904ef5bb50a0d3083266..f3c110154794d7b584896e06d6a59272deec1e01 100644
+index e88c39d405fc7068db64ad34a03dec8d559e749e..1fc54ea9f499d7b44cd039cd5d41d2de411c6f45 100644
 --- a/src/main/java/net/minecraft/world/entity/vehicle/ChestBoat.java
 +++ b/src/main/java/net/minecraft/world/entity/vehicle/ChestBoat.java
 @@ -34,14 +34,14 @@ import org.bukkit.inventory.InventoryHolder;
@@ -123,7 +123,7 @@ index a99e2586962952332dd9904ef5bb50a0d3083266..f3c110154794d7b584896e06d6a59272
      }
  
      public ChestBoat(Level world, double d0, double d1, double d2) {
-@@ -225,7 +225,7 @@ public class ChestBoat extends Boat implements HasCustomInventoryScreen, Contain
+@@ -239,7 +239,7 @@ public class ChestBoat extends Boat implements HasCustomInventoryScreen, Contain
  
      @Override
      public void clearItemStacks() {
@@ -131,8 +131,8 @@ index a99e2586962952332dd9904ef5bb50a0d3083266..f3c110154794d7b584896e06d6a59272
 +        this.itemStacks = xyz.holocons.mc.ItemListWithBitSet.withSize(this.getContainerSize()); // HoloCons - improve container checking with a bitset
      }
  
-     // Paper start
-@@ -288,4 +288,15 @@ public class ChestBoat extends Boat implements HasCustomInventoryScreen, Contain
+     @Override
+@@ -307,4 +307,15 @@ public class ChestBoat extends Boat implements HasCustomInventoryScreen, Contain
          return getBukkitEntity().getLocation();
      }
      // CraftBukkit end
@@ -313,10 +313,10 @@ index 881379681c39230a00b3a1f11cd87498984396c7..e6fe1815f7b628f937c5b117cb5a0f1a
 +    // HoloCons end
  }
 diff --git a/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-index d76603c4172aa10889949c6c2acff05fee02a13d..19e5a570d6b2ffa3176024c9c6036636a3bb3363 100644
+index b11f51762ca289d99eaa49e66e31e58595bcea4e..487b9044728e3a22c4782b382c17ee17561677c6 100644
 --- a/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-@@ -45,7 +45,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -47,7 +47,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
  
      public static final int MOVE_ITEM_SPEED = 8;
      public static final int HOPPER_CONTAINER_SIZE = 5;
@@ -325,7 +325,7 @@ index d76603c4172aa10889949c6c2acff05fee02a13d..19e5a570d6b2ffa3176024c9c6036636
      private int cooldownTime;
      private long tickedGameTime;
  
-@@ -81,14 +81,14 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -83,14 +83,14 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
  
      public HopperBlockEntity(BlockPos pos, BlockState state) {
          super(BlockEntityType.HOPPER, pos, state);
@@ -342,7 +342,7 @@ index d76603c4172aa10889949c6c2acff05fee02a13d..19e5a570d6b2ffa3176024c9c6036636
          if (!this.tryLoadLootTable(nbt)) {
              ContainerHelper.loadAllItems(nbt, this.items);
          }
-@@ -156,11 +156,11 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -158,11 +158,11 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
              if (!blockEntity.isOnCooldown() && (Boolean) state.getValue(HopperBlock.ENABLED)) {
                  boolean flag = false;
  
@@ -356,7 +356,7 @@ index d76603c4172aa10889949c6c2acff05fee02a13d..19e5a570d6b2ffa3176024c9c6036636
                      flag |= booleansupplier.getAsBoolean();
                  }
  
-@@ -197,12 +197,12 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -200,12 +200,12 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
  
      private static boolean hopperPush(final Level level, final Container destination, final Direction direction, final HopperBlockEntity hopper) {
          skipPushModeEventFire = skipHopperEvents;
@@ -374,7 +374,7 @@ index d76603c4172aa10889949c6c2acff05fee02a13d..19e5a570d6b2ffa3176024c9c6036636
                  ItemStack movedItem = origItemStack;
  
                  final int originalItemCount = origItemStack.getCount();
-@@ -408,12 +408,12 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -452,11 +452,12 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
      }
  
      private static boolean isFullContainer(Container inventory, Direction direction) {
@@ -383,13 +383,13 @@ index d76603c4172aa10889949c6c2acff05fee02a13d..19e5a570d6b2ffa3176024c9c6036636
      }
  
      private static boolean isEmptyContainer(Container inv, Direction facing) {
-         // Paper start
 -        return allMatch(inv, facing, IS_EMPTY_TEST);
++        // Paper start
 +        return inv instanceof WorldlyContainer ? allMatch(inv, facing, IS_EMPTY_TEST) : inv.isCompletelyEmpty(); // HoloCons - improve container checking with a bitset
      }
-     private static boolean allMatch(Container iinventory, Direction enumdirection, java.util.function.BiPredicate<ItemStack, Integer> test) {
-         if (iinventory instanceof WorldlyContainer) {
-@@ -592,7 +592,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+ 
+     public static boolean suckInItems(Level world, Hopper hopper) {
+@@ -637,7 +638,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
  
          if (HopperBlockEntity.canPlaceItemInContainer(to, stack, slot, side)) {
              boolean flag = false;
@@ -398,7 +398,7 @@ index d76603c4172aa10889949c6c2acff05fee02a13d..19e5a570d6b2ffa3176024c9c6036636
  
              if (itemstack1.isEmpty()) {
                  // Spigot start - SPIGOT-6693, InventorySubcontainer#setItem
-@@ -745,7 +745,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -832,7 +833,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
  
      @Override
      protected void setItems(NonNullList<ItemStack> list) {
@@ -407,7 +407,7 @@ index d76603c4172aa10889949c6c2acff05fee02a13d..19e5a570d6b2ffa3176024c9c6036636
      }
  
      public static void entityInside(Level world, BlockPos pos, BlockState state, Entity entity, HopperBlockEntity blockEntity) {
-@@ -761,4 +761,15 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -848,4 +849,15 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
      protected AbstractContainerMenu createMenu(int syncId, net.minecraft.world.entity.player.Inventory playerInventory) {
          return new HopperMenu(syncId, playerInventory, this);
      }

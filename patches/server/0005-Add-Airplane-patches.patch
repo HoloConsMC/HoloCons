@@ -22,10 +22,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 Co-authored-by: Derek Lee <derek.scott.lee13@gmail.com>
 
 diff --git a/src/main/java/net/minecraft/world/entity/ambient/Bat.java b/src/main/java/net/minecraft/world/entity/ambient/Bat.java
-index 320c558bbe80d4bbc641e895ec43cfa2b45e8d70..c9550f196995b5341bac7111ab21742535c6e179 100644
+index 5beaa849a250ea005733250ad3edfa8382224667..ef0e3c2cc437807255880fb4ecda5f06845a7e58 100644
 --- a/src/main/java/net/minecraft/world/entity/ambient/Bat.java
 +++ b/src/main/java/net/minecraft/world/entity/ambient/Bat.java
-@@ -256,7 +256,19 @@ public class Bat extends AmbientCreature {
+@@ -237,7 +237,19 @@ public class Bat extends AmbientCreature {
          }
      }
  
@@ -46,7 +46,7 @@ index 320c558bbe80d4bbc641e895ec43cfa2b45e8d70..c9550f196995b5341bac7111ab217425
          int i = localdate.get(ChronoField.DAY_OF_MONTH);
          int j = localdate.get(ChronoField.MONTH_OF_YEAR);
 diff --git a/src/main/java/net/minecraft/world/entity/player/Inventory.java b/src/main/java/net/minecraft/world/entity/player/Inventory.java
-index 5bc033bf59d49eda1f8f2574165bbcbeab7faa0f..f4a336aee41c170492b00c5d066d6177b5449e71 100644
+index 395cecc385e4126a7534ac9aeb15cf323efab03e..d606e86934ac69ac0a32d73606424232e75de32f 100644
 --- a/src/main/java/net/minecraft/world/entity/player/Inventory.java
 +++ b/src/main/java/net/minecraft/world/entity/player/Inventory.java
 @@ -681,14 +681,12 @@ public class Inventory implements Container, Nameable {
@@ -70,18 +70,3 @@ index 5bc033bf59d49eda1f8f2574165bbcbeab7faa0f..f4a336aee41c170492b00c5d066d6177
  
                  if (!itemstack1.isEmpty() && ItemStack.isSameItemSameTags(itemstack1, stack)) {
                      return true;
-diff --git a/src/main/java/net/minecraft/world/level/storage/loot/LootContext.java b/src/main/java/net/minecraft/world/level/storage/loot/LootContext.java
-index 35f9b11a3a61976c952a2c1c64bb2a932538f54f..80d6bba6a05686a6049b5d8c5c185e7154f805cf 100644
---- a/src/main/java/net/minecraft/world/level/storage/loot/LootContext.java
-+++ b/src/main/java/net/minecraft/world/level/storage/loot/LootContext.java
-@@ -41,8 +41,8 @@ public class LootContext {
-         this.level = world;
-         this.lootTables = tableGetter;
-         this.conditions = conditionGetter;
--        this.params = ImmutableMap.copyOf(parameters);
--        this.dynamicDrops = ImmutableMap.copyOf(drops);
-+        this.params = java.util.Collections.unmodifiableMap(parameters); // Airplane - skip cloning loot parameters
-+        this.dynamicDrops = java.util.Collections.unmodifiableMap(drops); // Airplane - skip cloning loot parameters
-     }
- 
-     public boolean hasParam(LootContextParam<?> parameter) {

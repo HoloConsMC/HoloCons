@@ -39,10 +39,10 @@ index b5d8a60dc78a76c0a55bfc30cc49d26857bd914a..e181a36f77dd27912faf0b3c00ec49b7
  
          @Override
 diff --git a/src/main/java/net/minecraft/core/Direction.java b/src/main/java/net/minecraft/core/Direction.java
-index c1172ba542bc07e0c780a50d5b4ce26ac04c1720..63397097470def86031a4ebfc4dda8a9dc28349e 100644
+index d0a8092bf57a29ab7c00ec0ddf52a9fdb2a33267..6efea274842e3813282508a23c46fe9224dc0960 100644
 --- a/src/main/java/net/minecraft/core/Direction.java
 +++ b/src/main/java/net/minecraft/core/Direction.java
-@@ -191,7 +191,7 @@ public enum Direction implements StringRepresentable {
+@@ -182,7 +182,7 @@ public enum Direction implements StringRepresentable {
      }
  
      public Direction getOpposite() {
@@ -97,10 +97,10 @@ index 50a9f33aa31e9273c7c52d4bb2b02f0f884f7ba5..111a6054fe60313dcc5d5122094b6c3f
      @Override
      public Iterator<T> iterator() {
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index f9217128a07d768069f1781b9e6802d785500ee7..08f0527b9a6773016f108c9c30e85c7f5fd4788c 100644
+index 18ceee87bd4bb00daab366d3c2845917293bc463..388a049dd22dd211ce86f15c8a60c32433273356 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -552,7 +552,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -571,7 +571,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
          this.random = SHARED_RANDOM; // Paper
          this.remainingFireTicks = -this.getFireImmuneTicks();
          this.fluidHeight = new Object2DoubleArrayMap(2);
@@ -109,7 +109,7 @@ index f9217128a07d768069f1781b9e6802d785500ee7..08f0527b9a6773016f108c9c30e85c7f
          this.firstTick = true;
          this.levelCallback = EntityInLevelCallback.NULL;
          this.packetPositionCodec = new VecDeltaCodec();
-@@ -1734,7 +1734,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -1864,7 +1864,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
  
      private void updateFluidOnEyes() {
          this.wasEyeInWater = this.isEyeInFluid(FluidTags.WATER);
@@ -146,34 +146,11 @@ index 6d6cdb8e3f627c6e7ee291d9bceb0754088a4c8f..3077cfc9d106a7208a3ecd037a99d345
      private final Supplier<ProfilerFiller> profiler;
      private final EnumSet<Goal.Flag> disabledFlags = EnumSet.noneOf(Goal.Flag.class); // Paper unused, but dummy to prevent plugins from crashing as hard. Theyll need to support paper in a special case if this is super important, but really doesn't seem like it would be.
      private final com.destroystokyo.paper.util.set.OptimizedSmallEnumSet<net.minecraft.world.entity.ai.goal.Goal.Flag> goalTypes = new com.destroystokyo.paper.util.set.OptimizedSmallEnumSet<>(Goal.Flag.class); // Paper - remove streams from pathfindergoalselector
-diff --git a/src/main/java/net/minecraft/world/level/GameRules.java b/src/main/java/net/minecraft/world/level/GameRules.java
-index 663c1d8c1611af915a1bae733920dd75ad73feb1..d87a282d14d1f049ab0347945a25a5388f99ab5b 100644
---- a/src/main/java/net/minecraft/world/level/GameRules.java
-+++ b/src/main/java/net/minecraft/world/level/GameRules.java
-@@ -116,13 +116,14 @@ public class GameRules {
-     }
- 
-     public GameRules() {
--        this.rules = (Map) GameRules.GAME_RULE_TYPES.entrySet().stream().collect(ImmutableMap.toImmutableMap(Entry::getKey, (entry) -> {
--            return ((GameRules.Type) entry.getValue()).createRule();
--        }));
-+        // Lithium start - use faster collection
-+        this.rules = new it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap<>(GameRules.GAME_RULE_TYPES.size());
-+        GameRules.GAME_RULE_TYPES.forEach((key, type) -> this.rules.put(key, type.createRule()));
-+        // Lithium end
-     }
- 
-     private GameRules(Map<GameRules.Key<?>, GameRules.Value<?>> rules) {
--        this.rules = rules;
-+        this.rules = new it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap<>(rules); // Lithium - use faster collection
-     }
- 
-     public <T extends GameRules.Value<T>> T getRule(GameRules.Key<T> key) {
 diff --git a/src/main/java/net/minecraft/world/level/biome/MobSpawnSettings.java b/src/main/java/net/minecraft/world/level/biome/MobSpawnSettings.java
-index 04c35af0431654c2a5c54113f257a0e0a42bff4f..7288dcbad9f84c9ef45c23a7302f8b417ef76b00 100644
+index 9e2f7fc64b284efd6388be35f250642c47e7603b..902d1de8cba7c01d0c95ca3ae92a917b81356042 100644
 --- a/src/main/java/net/minecraft/world/level/biome/MobSpawnSettings.java
 +++ b/src/main/java/net/minecraft/world/level/biome/MobSpawnSettings.java
-@@ -41,7 +41,7 @@ public class MobSpawnSettings {
+@@ -43,7 +43,7 @@ public class MobSpawnSettings {
  
      MobSpawnSettings(float creatureSpawnProbability, Map<MobCategory, WeightedRandomList<MobSpawnSettings.SpawnerData>> spawners, Map<EntityType<?>, MobSpawnSettings.MobSpawnCost> spawnCosts) {
          this.creatureGenerationProbability = creatureSpawnProbability;
@@ -183,10 +160,10 @@ index 04c35af0431654c2a5c54113f257a0e0a42bff4f..7288dcbad9f84c9ef45c23a7302f8b41
      }
  
 diff --git a/src/main/java/net/minecraft/world/level/block/ComposterBlock.java b/src/main/java/net/minecraft/world/level/block/ComposterBlock.java
-index f6268231e39f50bb6adedd85e3c18d746ae3792d..4faa9ae47c6a89d1849519e1171ded4200a9ddfd 100644
+index 10d3912ef043eefdf89105332e29b0d2bf4a5539..0d1a76b7a53a5ea07ac374bb1881f55b087db184 100644
 --- a/src/main/java/net/minecraft/world/level/block/ComposterBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/ComposterBlock.java
-@@ -417,7 +417,7 @@ public class ComposterBlock extends Block implements WorldlyContainerHolder {
+@@ -415,7 +415,7 @@ public class ComposterBlock extends Block implements WorldlyContainerHolder {
  
          @Override
          public int[] getSlotsForFace(Direction side) {
@@ -195,7 +172,7 @@ index f6268231e39f50bb6adedd85e3c18d746ae3792d..4faa9ae47c6a89d1849519e1171ded42
          }
  
          @Override
-@@ -466,7 +466,7 @@ public class ComposterBlock extends Block implements WorldlyContainerHolder {
+@@ -464,7 +464,7 @@ public class ComposterBlock extends Block implements WorldlyContainerHolder {
  
          @Override
          public int[] getSlotsForFace(Direction side) {
@@ -204,7 +181,7 @@ index f6268231e39f50bb6adedd85e3c18d746ae3792d..4faa9ae47c6a89d1849519e1171ded42
          }
  
          @Override
-@@ -508,7 +508,7 @@ public class ComposterBlock extends Block implements WorldlyContainerHolder {
+@@ -506,7 +506,7 @@ public class ComposterBlock extends Block implements WorldlyContainerHolder {
  
          @Override
          public int[] getSlotsForFace(Direction side) {
@@ -213,7 +190,7 @@ index f6268231e39f50bb6adedd85e3c18d746ae3792d..4faa9ae47c6a89d1849519e1171ded42
          }
  
          @Override
-@@ -521,4 +521,8 @@ public class ComposterBlock extends Block implements WorldlyContainerHolder {
+@@ -519,4 +519,8 @@ public class ComposterBlock extends Block implements WorldlyContainerHolder {
              return false;
          }
      }
@@ -223,15 +200,15 @@ index f6268231e39f50bb6adedd85e3c18d746ae3792d..4faa9ae47c6a89d1849519e1171ded42
 +    // Lithium end
  }
 diff --git a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
-index 5810aae8aac9c368b2e22ee2bc0e081b1f91be6e..ca19e74a01a59d27e354adc06e1fca5b06497b1a 100644
+index 9a8fbf20c4a3033183c5a8952a4969a6dfe17e87..0d967fd05f576ecc1b5952462d8dfa9922bad648 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
-@@ -98,7 +98,7 @@ public class LevelChunk extends ChunkAccess {
+@@ -95,7 +95,7 @@ public class LevelChunk extends ChunkAccess {
          this.setBlockNibbles(ca.spottedleaf.starlight.common.light.StarLightEngine.getFilledEmptyLight(world));
          this.setSkyNibbles(ca.spottedleaf.starlight.common.light.StarLightEngine.getFilledEmptyLight(world));
          // Paper end - rewrite light engine
 -        this.tickersInLevel = Maps.newHashMap();
 +        this.tickersInLevel = new it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap<>(); // Lithium - use faster collection
-         this.clientLightReady = false;
          this.level = (ServerLevel) world; // CraftBukkit - type
          this.gameEventListenerRegistrySections = new Int2ObjectOpenHashMap();
+         Heightmap.Types[] aheightmap_type = Heightmap.Types.values();

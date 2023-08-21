@@ -6,10 +6,10 @@ Subject: [PATCH] Add Purpur patches
 Co-authored-by: Derek Lee <derek.scott.lee13@gmail.com>
 
 diff --git a/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java b/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
-index 58fa7b99dc7a9745afe6faf31c1804e95ed27dbe..047c14b854bab17d369cb70f701711dcb7b1a557 100644
+index 70aade6a8d36f8376cc567800258ea6fabb0607f..583f0768d4fdaee0d0ac7d9bd5ab27970304c300 100644
 --- a/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
 +++ b/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
-@@ -1161,6 +1161,23 @@ public interface DispenseItemBehavior {
+@@ -1186,6 +1186,23 @@ public interface DispenseItemBehavior {
                  }
              }
          });
@@ -34,10 +34,10 @@ index 58fa7b99dc7a9745afe6faf31c1804e95ed27dbe..047c14b854bab17d369cb70f701711dc
  
      static void setEntityPokingOutOfBlock(BlockSource pointer, Entity entity, Direction direction) {
 diff --git a/src/main/java/net/minecraft/world/entity/monster/Shulker.java b/src/main/java/net/minecraft/world/entity/monster/Shulker.java
-index 9dedb3599d5388c1bcc34558e8e5cb4a8668646f..fafbce07462cce41c36e895a1009d3bdeb5a6cc3 100644
+index d2073de07bdad71b20e05046577b16649123967b..1776bcdf1035a98549385189fe90c821b2d1fdbc 100644
 --- a/src/main/java/net/minecraft/world/entity/monster/Shulker.java
 +++ b/src/main/java/net/minecraft/world/entity/monster/Shulker.java
-@@ -606,6 +606,24 @@ public class Shulker extends AbstractGolem implements VariantHolder<Optional<Dye
+@@ -608,6 +608,24 @@ public class Shulker extends AbstractGolem implements VariantHolder<Optional<Dye
  
          return b0 != 16 && b0 <= 15 ? DyeColor.byId(b0) : null;
      }

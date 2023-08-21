@@ -5,14 +5,14 @@ Subject: [PATCH] Improve plugin loading strategy
 
 
 diff --git a/src/main/java/io/papermc/paper/plugin/storage/SimpleProviderStorage.java b/src/main/java/io/papermc/paper/plugin/storage/SimpleProviderStorage.java
-index a7085dbf2c5ace9b6887d024c0785fa529e0f1da..8b545e4b033da4311cd406578916ce58f0e100af 100644
+index 861c245290696eef0fca846c3026b407593fdce1..d0fcb7fc1c14426a8657543be5930ff290014a19 100644
 --- a/src/main/java/io/papermc/paper/plugin/storage/SimpleProviderStorage.java
 +++ b/src/main/java/io/papermc/paper/plugin/storage/SimpleProviderStorage.java
-@@ -30,6 +30,7 @@ public abstract class SimpleProviderStorage<T> implements ProviderStorage<T> {
+@@ -34,6 +34,7 @@ public abstract class SimpleProviderStorage<T> implements ProviderStorage<T> {
      public void enter() {
          List<PluginProvider<T>> providerList = new ArrayList<>(this.providers);
          this.filterLoadingProviders(providerList);
 +        providerList.sort(java.util.Comparator.comparingLong(provider -> provider.getSource().toFile().lastModified())); // HoloCons - improve plugin loading strategy
  
          try {
-             for (ProviderLoadingStrategy.ProviderPair<T> providerPair : this.strategy.loadProviders(providerList)) {
+             for (ProviderLoadingStrategy.ProviderPair<T> providerPair : this.strategy.loadProviders(providerList, this.getDependencyTree())) {
