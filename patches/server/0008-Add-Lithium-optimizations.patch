@@ -97,10 +97,10 @@ index 50a9f33aa31e9273c7c52d4bb2b02f0f884f7ba5..111a6054fe60313dcc5d5122094b6c3f
      @Override
      public Iterator<T> iterator() {
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 18ceee87bd4bb00daab366d3c2845917293bc463..388a049dd22dd211ce86f15c8a60c32433273356 100644
+index f78a91deb3c9080ed1c35588f081f13836e8c727..a0cb2269693bbe2e35a25cfb8c1072b33e216c0f 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -571,7 +571,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -572,7 +572,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
          this.random = SHARED_RANDOM; // Paper
          this.remainingFireTicks = -this.getFireImmuneTicks();
          this.fluidHeight = new Object2DoubleArrayMap(2);
@@ -109,7 +109,7 @@ index 18ceee87bd4bb00daab366d3c2845917293bc463..388a049dd22dd211ce86f15c8a60c324
          this.firstTick = true;
          this.levelCallback = EntityInLevelCallback.NULL;
          this.packetPositionCodec = new VecDeltaCodec();
-@@ -1864,7 +1864,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -1866,7 +1866,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
  
      private void updateFluidOnEyes() {
          this.wasEyeInWater = this.isEyeInFluid(FluidTags.WATER);
@@ -200,7 +200,7 @@ index 10d3912ef043eefdf89105332e29b0d2bf4a5539..0d1a76b7a53a5ea07ac374bb1881f55b
 +    // Lithium end
  }
 diff --git a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
-index 9a8fbf20c4a3033183c5a8952a4969a6dfe17e87..0d967fd05f576ecc1b5952462d8dfa9922bad648 100644
+index 94ab7137530995f3ed5d8103729af9c3d6e94be3..2ea04071a1e213dd9a7536303b24d395dda4539b 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
 @@ -95,7 +95,7 @@ public class LevelChunk extends ChunkAccess {

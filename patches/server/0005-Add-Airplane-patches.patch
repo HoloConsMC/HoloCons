@@ -46,10 +46,10 @@ index 5beaa849a250ea005733250ad3edfa8382224667..ef0e3c2cc437807255880fb4ecda5f06
          int i = localdate.get(ChronoField.DAY_OF_MONTH);
          int j = localdate.get(ChronoField.MONTH_OF_YEAR);
 diff --git a/src/main/java/net/minecraft/world/entity/player/Inventory.java b/src/main/java/net/minecraft/world/entity/player/Inventory.java
-index 395cecc385e4126a7534ac9aeb15cf323efab03e..d606e86934ac69ac0a32d73606424232e75de32f 100644
+index 96d664c28738d6090f7067761c2978dd1aa0fd0e..501778084c88efbf250ca361d8f6acc7a130f783 100644
 --- a/src/main/java/net/minecraft/world/entity/player/Inventory.java
 +++ b/src/main/java/net/minecraft/world/entity/player/Inventory.java
-@@ -681,14 +681,12 @@ public class Inventory implements Container, Nameable {
+@@ -687,14 +687,12 @@ public class Inventory implements Container, Nameable {
      }
  
      public boolean contains(ItemStack stack) {
