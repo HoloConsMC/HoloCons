@@ -6,10 +6,10 @@ Subject: [PATCH] Add Purpur patches
 Co-authored-by: Derek Lee <derek.scott.lee13@gmail.com>
 
 diff --git a/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java b/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
-index 70aade6a8d36f8376cc567800258ea6fabb0607f..583f0768d4fdaee0d0ac7d9bd5ab27970304c300 100644
+index 8c2750de3be202122ccf9923a9fa32fcb8bdb743..8e584d8b2b1505e110d54c8fb4a9cc993d58d33f 100644
 --- a/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
 +++ b/src/main/java/net/minecraft/core/dispenser/DispenseItemBehavior.java
-@@ -1186,6 +1186,23 @@ public interface DispenseItemBehavior {
+@@ -1187,6 +1187,23 @@ public interface DispenseItemBehavior {
                  }
              }
          });

@@ -239,10 +239,10 @@ index c49802c936ae8e3f4dc1badd98414d96714ecd60..71c59a8b52a709b0585ba2ea289a610a
  
      @Override
 diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
-index 65d947df910d60f478e7a449eb161e5105e2c0c9..ccb6ef5ecb7c691c61fed796612b69a19ce91d51 100644
+index fb6cbcc4839aef7dc4bd4a49613f892b07aab353..278ff7590be98ae561a1031deba2705c5a2228cf 100644
 --- a/src/main/java/net/minecraft/server/level/ChunkMap.java
 +++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
-@@ -639,13 +639,13 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -642,13 +642,13 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
      protected void tick(BooleanSupplier shouldKeepTicking) {
          ProfilerFiller gameprofilerfiller = this.level.getProfiler();
  
@@ -258,7 +258,7 @@ index 65d947df910d60f478e7a449eb161e5105e2c0c9..ccb6ef5ecb7c691c61fed796612b69a1
              this.processUnloads(shouldKeepTicking);
              } // Paper
          }
-@@ -1269,24 +1269,24 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -1272,24 +1272,24 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
  
      // Paper start - optimised tracker
      private final void processTrackQueue() {
@@ -287,7 +287,7 @@ index 65d947df910d60f478e7a449eb161e5105e2c0c9..ccb6ef5ecb7c691c61fed796612b69a1
          }
      }
      // Paper end - optimised tracker
-@@ -1301,7 +1301,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -1304,7 +1304,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
          List<ServerPlayer> list = Lists.newArrayList();
          List<ServerPlayer> list1 = this.level.players();
          ObjectIterator objectiterator = this.entityMap.values().iterator();
@@ -296,7 +296,7 @@ index 65d947df910d60f478e7a449eb161e5105e2c0c9..ccb6ef5ecb7c691c61fed796612b69a1
  
          ChunkMap.TrackedEntity playerchunkmap_entitytracker;
  
-@@ -1326,17 +1326,17 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -1329,17 +1329,17 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
                  playerchunkmap_entitytracker.serverEntity.sendChanges();
              }
          }
@@ -604,19 +604,19 @@ index 18aac3da3c88f33b1a71a5920a8daa27e9723913..ba46e2e53be279f4442edc1289bacbc4
              // Paper - rewrite chunk system - entity saving moved into ChunkHolder
  
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 3c0651fa5a5db880202c9a3805a6455269c5f16d..2f8af354988e9f16baefac5e3d3ef877ab2673d7 100644
+index ab58827001b3b42e44d7f701c390480fed1fa1f1..c1b89be1a346f067d7af332f35a1276054c179cd 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -2556,7 +2556,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
-             }
-         }
-         // Paper End
+@@ -2535,7 +2535,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+ 
+     public void handleCommand(String s) { // Paper - private -> public
+         org.spigotmc.AsyncCatcher.catchOp("Command Dispatched Async: " + s); // Paper - Add async catcher
 -        co.aikar.timings.MinecraftTimings.playerCommandTimer.startTiming(); // Paper
 +        // Paper // HoloCons - remove timings
          if ( org.spigotmc.SpigotConfig.logCommands ) // Spigot
          this.LOGGER.info(this.player.getScoreboardName() + " issued server command: " + s);
  
-@@ -2566,7 +2566,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+@@ -2545,7 +2545,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
          this.cserver.getPluginManager().callEvent(event);
  
          if (event.isCancelled()) {
@@ -625,7 +625,7 @@ index 3c0651fa5a5db880202c9a3805a6455269c5f16d..2f8af354988e9f16baefac5e3d3ef877
              return;
          }
  
-@@ -2579,7 +2579,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+@@ -2558,7 +2558,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
              java.util.logging.Logger.getLogger(ServerGamePacketListenerImpl.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
              return;
          } finally {
@@ -706,10 +706,10 @@ index fcdb9bde8e1605e30dde3e580491522d4b62cdc0..c945893f1f0e6f11ec99b3b48d20004e
  
      }
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index f39ab10c5b0b8d86b579a5b683491204c51db70b..3091e55ae0f17ba1e8bfe547b4415d8eed31d8dd 100644
+index 7d54c79f46f99f5500e9cb1f486037cafb27ee3a..0d99b029abbf70ae59a0a97fd54bc92d7b7f14ed 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -867,15 +867,15 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -951,15 +951,15 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
          ProfilerFiller gameprofilerfiller = this.getProfiler();
  
          gameprofilerfiller.push("blockEntities");
@@ -728,7 +728,7 @@ index f39ab10c5b0b8d86b579a5b683491204c51db70b..3091e55ae0f17ba1e8bfe547b4415d8e
          // Spigot start
          // Iterator iterator = this.blockEntityTickers.iterator();
          int tilesThisCycle = 0;
-@@ -908,7 +908,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -992,7 +992,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
          }
          this.blockEntityTickers.removeAll(toRemove);
  

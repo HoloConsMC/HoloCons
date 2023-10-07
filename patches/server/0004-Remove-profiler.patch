@@ -368,10 +368,10 @@ index 6897325267e948518dfb826bee0b3dc74087d1c5..6cab15caba2d719a4c95a88b85ab24a5
  
                  ++j;
 diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
-index ccb6ef5ecb7c691c61fed796612b69a19ce91d51..0840b392efc2cd715a32c22f6ac4d20cba3ca28f 100644
+index 278ff7590be98ae561a1031deba2705c5a2228cf..9a21dbc1d4e46cfee7930f6b871af3c990c019f5 100644
 --- a/src/main/java/net/minecraft/server/level/ChunkMap.java
 +++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
-@@ -637,20 +637,20 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -640,20 +640,20 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
      }
  
      protected void tick(BooleanSupplier shouldKeepTicking) {
@@ -772,7 +772,7 @@ index b382da838acc04a1c5d89064b4fa43bcdd38ae71..6339e8d0b9fe9e6acb96e0e63260ff69
                  this.connection.send(new ClientboundPlayerAbilitiesPacket(this.getAbilities()));
                  playerlist.sendLevelInfo(this, worldserver);
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 2f8af354988e9f16baefac5e3d3ef877ab2673d7..e0246460a30a19fbbf0347771033df2385538669 100644
+index c1b89be1a346f067d7af332f35a1276054c179cd..0fb4f9e6d21b0c7c7cfd1d2c252e5a4067054eda 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -397,7 +397,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
@@ -1124,7 +1124,7 @@ index e8485fb900b25e911a858678a833852731cb2ace..f78a91deb3c9080ed1c35588f081f138
              }
          } else {
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index e11d7283662834047b2ff81a2fd25a4263792deb..6b27eecdaea380588a33e680152affcf306a5cf7 100644
+index 78c98f38bc263664ea4cd344670243a7d372885c..eb9da98e07d8781907145cb784dbea573eb5b1cf 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
 @@ -405,7 +405,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
@@ -1235,7 +1235,7 @@ index e11d7283662834047b2ff81a2fd25a4263792deb..6b27eecdaea380588a33e680152affcf
          if (((ServerLevel) this.level()).hasEntityMoveEvent && !(this instanceof net.minecraft.world.entity.player.Player)) {
              if (this.xo != this.getX() || this.yo != this.getY() || this.zo != this.getZ() || this.yRotO != this.getYRot() || this.xRotO != this.getXRot()) {
 diff --git a/src/main/java/net/minecraft/world/entity/Mob.java b/src/main/java/net/minecraft/world/entity/Mob.java
-index e2a25c29ec74147b3e66aa0b3deb85a8f6ee53a5..29f6c6d9bbb9d97982b9bc750bb962f7ac020efe 100644
+index a99d737f71277ea3082816c7a7fc47ab3a201d30..e8e44e9f56e0eec6baafc9d4efc6b80a76a9a76e 100644
 --- a/src/main/java/net/minecraft/world/entity/Mob.java
 +++ b/src/main/java/net/minecraft/world/entity/Mob.java
 @@ -360,13 +360,13 @@ public abstract class Mob extends LivingEntity implements Targeting {
@@ -1686,10 +1686,10 @@ index 8f97c9df726ac20cfce7bdddd5dd4f8c5aa76c35..e52d7483b7339e46263298ed16929044
              }
  
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 3091e55ae0f17ba1e8bfe547b4415d8eed31d8dd..ed42971d85cbe22e6545345c1624ee00c637357d 100644
+index 0d99b029abbf70ae59a0a97fd54bc92d7b7f14ed..a550f66326e1bb3760de646f1f518af586128359 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -864,9 +864,9 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -948,9 +948,9 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
      }
  
      protected void tickBlockEntities() {
@@ -1701,7 +1701,7 @@ index 3091e55ae0f17ba1e8bfe547b4415d8eed31d8dd..ed42971d85cbe22e6545345c1624ee00
          // Spigot // HoloCons - remove timings
          this.tickingBlockEntities = true;
          if (!this.pendingBlockEntityTickers.isEmpty()) {
-@@ -911,7 +911,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -995,7 +995,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
          // Spigot // HoloCons - remove timings
          this.tickingBlockEntities = false;
          co.aikar.timings.TimingHistory.tileEntityTicks += this.blockEntityTickers.size(); // Paper
@@ -1710,7 +1710,7 @@ index 3091e55ae0f17ba1e8bfe547b4415d8eed31d8dd..ed42971d85cbe22e6545345c1624ee00
          spigotConfig.currentPrimedTnt = 0; // Spigot
      }
  
-@@ -1104,7 +1104,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -1188,7 +1188,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
  
      @Override
      public List<Entity> getEntities(@Nullable Entity except, AABB box, Predicate<? super Entity> predicate) {
@@ -1719,7 +1719,7 @@ index 3091e55ae0f17ba1e8bfe547b4415d8eed31d8dd..ed42971d85cbe22e6545345c1624ee00
          List<Entity> list = Lists.newArrayList();
          ((ServerLevel)this).getEntityLookup().getEntities(except, box, list, predicate); // Paper - optimise this call
          return list;
-@@ -1123,7 +1123,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -1207,7 +1207,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
      }
  
      public <T extends Entity> void getEntities(EntityTypeTest<Entity, T> filter, AABB box, Predicate<? super T> predicate, List<? super T> result, int limit) {
@@ -1728,7 +1728,7 @@ index 3091e55ae0f17ba1e8bfe547b4415d8eed31d8dd..ed42971d85cbe22e6545345c1624ee00
          // Paper start - optimise this call
          //TODO use limit
          if (filter instanceof net.minecraft.world.entity.EntityType entityTypeTest) {
-@@ -1380,7 +1380,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -1464,7 +1464,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
      }
  
      public ProfilerFiller getProfiler() {
